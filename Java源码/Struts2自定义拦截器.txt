@@ -1,0 +1,60 @@
+Struts2自定义拦截器
+1．在写自定义的拦截器的时候要实现Interceptor，并实现接口中的方法，代码为：
+package cn.csdn.hr.struts.inter;
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.Interceptor;
+public class MyTimerInterceptor implements Interceptor {
+    private static final long serialVersionUID = 1L;
+    //服务器销毁的时候执行
+    public void destroy() {
+        System.out.println("销毁的时候执行一次");
+    }
+    //服务器开始的时候执行
+    public void init() {
+        System.out.println("初始化的时候执行一次");
+ 
+    }
+    //用来拦截从jsp中传过来的值
+    public String intercept(ActionInvocation invocation) throws Exception {
+ 
+        // 得到一个aciton
+        Object obj = invocation.getAction();
+        System.out.println(obj.toString());
+ 
+        long mil = System.currentTimeMillis();
+ 
+        System.out.println("目标方法执行之前。。。");
+ 
+        String result = invocation.invoke();// 执行目标方法，当某个条件成立之后就返回
+ 
+        System.out.println("目标方法执行之后、、、" + (System.currentTimeMillis() - mil));
+ 
+        System.out.println("每次请求都执行一次");
+ 
+        return result;
+    }
+}
+2．创建自定义拦截器之后要在struts.xml中声明，声明的代码为：
+<interceptors>
+            <!-- 声明-->
+            <interceptor name="myTimer"
+    class="cn.csdn.hr.struts.inter.MyTimerInterceptor"></interceptor>
+            <!-- 声明一个拦截器站-->
+            <interceptor-stack name="myStack">
+                <interceptor-ref name="myTimer"></interceptor-ref>
+                <interceptor-ref name="defaultStack"></interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+     
+标签<interceptor/>是用来声明一个拦截器，<interceptor-stack/>是用来声明拦截器栈，拦截器栈不仅把自己创建的拦截器加入，而且把默认的拦截器也加入，使自定义的拦截器功能更强大。但是要注意，如果只是运行自定义的拦截器，默认的拦截器就会被覆盖而得不到执行。
+创建的拦截器在action中的使用：
+<action name="hiInter"
+            class="cn.csdn.hr.struts.inter.action.MyInterceptorAction" method="say">
+            <interceptor-ref name="myStack"></interceptor-ref>
+            <result>../success.jsp</result>
+    </action>
+直接用标签<interceptor-ref name="myStack"></interceptor-ref>声明即可。
+ 
+ 
+如果把拦截器设置成默认的：<interceptor-ref name="defaultStack" />，在访问的时候如果地址是：
+http://localhost:8080/struts2Servlet/csdn/hiInter?msg=laow,可以把参数传递过去，但是如果写成自定义的标签，不会传递过去。

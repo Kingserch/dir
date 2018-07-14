@@ -1,0 +1,16 @@
+import  org.junit.Test;
+            import  org.slf4j.LoggerFactory;
+            import  org.slf4j.Logger;
+ 
+            public  class TestLog{
+                private  Logger  logger = LogFactory.getLog(TestLog.class);
+ 
+                @Test
+                public  void  test()  throws  Exception{
+                    log.debug("这是debug级别");
+                    log.info("这是信息级别");
+                    log.warn("这是警告级别");
+                    log.error("这是错误级别");
+                    log.fatal("这是严重错误级别");
+                }
+            }

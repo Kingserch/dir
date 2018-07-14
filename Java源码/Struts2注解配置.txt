@@ -1,0 +1,158 @@
+package com.struts05.action;
+ 
+ 
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.ExceptionMapping;
+import org.apache.struts2.convention.annotation.ExceptionMappings;
+import org.apache.struts2.convention.annotation.InterceptorRef;
+import org.apache.struts2.convention.annotation.InterceptorRefs;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.ResultPath;
+import org.apache.struts2.convention.annotation.Results;
+import org.apache.struts2.interceptor.validation.SkipValidation;
+ 
+ 
+import com.actionUtil.ActionUtil;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork2.validator.annotations.Validations;
+import com.pojo.Users;
+ 
+ 
+/**
+ * annotation使用:
+ *
+ * 导包
+ * struts2-convention-plugin-2.3.15.3.jar
+ * asm-3.3.jar
+ * asm-commons-3.3.jar
+ * struts2-config-browser-plugin-2.3.15.3.jar(可选,查看struts2的Action各种资源的映射)
+ *
+ * 注意：对于Convention插件而言,它会自动搜索位于action、actions、struts、struts2包下的所有java类.
+ *     Convention插件会把如下两种java类当成Action处理:
+ *     1.类名以xxxAction命名
+ *     2.继承ActionSuppot的类
+ *
+ * xml(不是必须配置):
+ * <struts> 
+ *   <!-- 请求参数的编码方式 --> 
+ *   <constant name="struts.i18n.encoding" value="UTF-8" /> 
+ *   <!-- 指定被struts2处理的请求后缀类型。多个用逗号隔开 --> 
+ *   <constant name="struts.action.extension" value="action,do,htm" /> 
+ *   <!-- 当struts.xml改动后，是否重新加载。默认值为false(生产环境下使用),开发阶段最好打开 --> 
+ *   <constant name="struts.configuration.xml.reload" value="true" /> 
+ *   <!-- 是否使用struts的开发模式。开发模式会有更多的调试信息。默认值为false(生产环境下使用),开发阶段最好打开 --> 
+ *   <constant name="struts.devMode" value="false" /> 
+ *   <!-- 设置浏览器是否缓存静态内容。默认值为true(生产环境下使用),开发阶段最好关闭 --> 
+ *   <constant name="struts.serve.static.browserCache" value="false" />
+ *   <!-- 是否开启动态方法调用 --> 
+ *   <constant name="struts.enable.DynamicMethodInvocation" value="false" /> 
+ * </struts>
+ *
+ * 常用的注解:
+ * @ParentPackage("struts-default"):指定父包
+ * @Namespace("/struts05"):指定命名空间
+ * @ResultPath("/"):定位资源到指定路径下
+ * @Results:指定一组结果集
+ * @Result(name="success",location="success.jsp"):指定一个结果集
+ * @Action(value="error",results={@Result(name="error",location="error.jsp")}):指定action,建议写在方法上,可以只配value属性,其他引用@Results中结果集
+ * @Actions({@Action("login1"),@Action("login2")}):指定一组action,一个方法指定多个action,建议写在方法上,可以只配value属性,其他引用@Results中结果集
+ * 指定一组异常:
+ * @ExceptionMappings({
+ *      @ExceptionMapping(exception="java.lange.RuntimeException",result="error"),
+ *      @ExceptionMapping(exception="Exception",result="error")
+ * })
+ * 指定一组验证:
+ * @Validations(
+ *     requiredStrings={
+ *          @RequiredStringValidator(fieldName="user.username",message="username is null !"),
+ *          @RequiredStringValidator(fieldName="user.password",message="password is null !")
+ *     },
+ *     regexFields={@RegexFieldValidator(fieldName="telNum",expression="^(//+86|0|1)//d{10,11}$",message="电话号码格式不正确！")}
+ * )
+ * @SkipValidation:写在放上可跳过验证
+ * 指定一组拦截器:
+ * 注意:使用token的话建议放在方法上指定拦截器@Action(value="login",interceptorRefs={@InterceptorRef("token")}),
+ * 如果在类上方配置@InterceptorRefs会将所有action配置@InterceptorRef("token").
+ * @InterceptorRefs({
+ *     @InterceptorRef("defaultStack")
+ * })
+ * 如果使用自定义拦截器必须配置在struts.xml中一起使用,定义一个包,@ParentPackage继承配置的包,在包中定义自己的拦截器
+ *
+ * 查看struts2配置:
+ * 为了看到struts2应用里的Action等各种资源的影射情况,struts2提供了Config Browser插件.
+ * 使用方法：将struts2-config-browser-plugin-2.1.6.jar文件复制到struts2应用的WEB-INF/lib目录中.
+ * 打开首页地址：http://localhost:8090/应用名字/config-browser/actionNames.action 这里可以看到Config Browser插件的首页.
+ */
+@ParentPackage("struts-default")
+@Namespace("/struts05")
+@ResultPath("/")
+@Results({
+    @Result(name="success",location="success.jsp",type="dispatcher"),
+    @Result(name="login",location="index.jsp",type="redirect"),
+    @Result(name="input",location="index.jsp"),
+    @Result(name="invalid.token",location="error.jsp")
+})
+@ExceptionMappings({
+    @ExceptionMapping(exception="java.lange.RuntimeException",result="error")  
+})
+@Validations(
+    requiredStrings={
+            @RequiredStringValidator(fieldName="user.username",message="username is null !"),
+            @RequiredStringValidator(fieldName="user.password",message="password is null !")
+    }
+)
+@InterceptorRefs({
+    @InterceptorRef("defaultStack")
+})
+public class LoginActino extends ActionUtil  {
+ 
+ 
+    private static final long serialVersionUID = 1L;
+    private Users user;
+     
+    public Users getUser() {
+        return user;
+    }
+ 
+ 
+    public void setUser(Users user) {
+        this.user = user;
+    }
+     
+    private String token;
+     
+     
+    public String getToken() {
+        return token;
+    }
+ 
+ 
+    public void setToken(String token) {
+        this.token = token;
+    }
+ 
+ 
+    @Action(value="login",interceptorRefs={@InterceptorRef("token")})
+    public String login(){
+        if (user.getUsername().equals("lee") && user.getPassword().equals("123")) {
+            session.put("isLogin", user.getUsername());
+            return SUCCESS;
+        }
+        return LOGIN;
+    }
+     
+    @SkipValidation
+    @Action("reg")
+    public String reg(){
+        return SUCCESS;
+    }
+     
+    @SkipValidation
+    @Action(value="error",results={@Result(name="error",location="error.jsp")})
+    public String error(){
+        return ERROR;
+    }
+     
+}

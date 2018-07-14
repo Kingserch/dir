@@ -1,0 +1,40 @@
+public class BusinessValidator extends FieldValidatorSupport {
+ 
+    private String property = null;
+     
+    public String getProperty() {
+        return property;
+    }
+     
+    public void setProperty(String property) {
+        this.property = property;
+    }
+     
+    @Override
+    public void validate(Object exist) throws ValidationException {
+        String fieldName = getFieldName();
+        Object fieldValue = getFieldValue(fieldName, exist);
+        if (fieldValue != null && fieldValue instanceof Integer &&
+        ((Integer)fieldValue) <= 0)
+        {
+            addFieldError("message", "上传的ID，该数据是不存在!");
+        } else if (fieldValue == null)
+        {
+            addFieldError("message", "上传的ID，该数据是不存在!");
+        } else {
+            if (exist != null && exist instanceof Main &&
+            ((Main)exist).getModel() instanceof IChecker)
+            {
+                Main pa = (Main)exist;
+                IChecker e = (IChecker)pa.getModel();
+                boolean isRight = e.checkOk(property, pa);
+                if (!isRight)
+                {
+                    addFieldError("message", "上传的ID，该数据是不存在!");
+                } else {
+                    pa.getPubDao().getHibernateTemplate().clear();
+                }
+            }
+        }
+    }
+}

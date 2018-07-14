@@ -1,0 +1,289 @@
+/*jsp的上传(导入第三方upload.jar)*/
+ 
+//用Apache的SmartUpload方式上传,共5部
+//1.引入SmartUpload
+SmartUpload su = new SmartUpload();
+//2.设定允许上传的文件类型,格式之间用逗号隔开
+su.setAllowedFilesList("jpg,jpeg,gif");
+//3.设定允许上传的文件的大小
+su.setMaxFileSize(3*1024*1024);
+//4.初始化接收页面提交过来的请求
+su.initialize(this.getServletConfig(), request, response);
+//5.上传
+su.upload();
+             
+//注意:使用SmartUpload这种上传方式,接收页面请求不能使用HttpServletRequest
+//务必使用SmartUpload自带的Request,否则接收全部为空
+Request myreq = su.getRequest();
+String name = myreq.getParameter("myname");
+String pass = myreq.getParameter("mypass");
+             
+//设定要另存为的地址
+java.io.File myfile = new java.io.File(this.getServletContext().getRealPath("/images"));
+//如果路径不存在
+if(!myfile.exists()){
+    //创建一个路径
+    myfile.mkdir();
+}
+             
+//获取上传文件的对象
+//获取所有上传文件的对象
+Files files = su.getFiles();
+//获取当前上传的文件,0表示获取第一个
+File file = files.getFile(0);
+//获取文件名
+String fileName = file.getFileName();
+//获取后缀名
+String fileExt = file.getFileExt();
+//获取文件大小
+int fileSize = file.getSize();
+             
+//重新组合一个文件名使用uuid
+String trueName = new UUIDGenerator().generate()+"."+fileExt;
+//设定上传文件的最终保存路径
+//  /images/6598564265859453621595684585956.jpg
+String finalPath = "/"+myfile.getName()+"/"+trueName;
+//另存为
+file.saveAs(finalPath);
+ 
+//==============================================================================================================================================
+ 
+/*struts1的上传与下载*/
+ 
+/*struts1的上传:*/
+ 
+//index.jsp中
+    <form action="upload.do" method = "post" enctype = "multipart/form-data">
+        上传文件:<input type = "file" name = "up" />
+        <br/>
+        <input type = "submit" value = "上传" />
+    </form>
+ 
+//struts-config.xml文件中
+    <struts-config>
+      <data-sources />
+      <form-beans>
+        <form-bean name="check" type="com.etoak.form.MyActionForm"></form-bean>
+      </form-beans>
+      <global-exceptions />
+      <global-forwards />
+      <action-mappings>
+        <action path="/upload" name = "check" type = "com.etoak.action.MyAction">
+            <forward name="suc" path="/show.jsp"></forward>
+        </action>
+      </action-mappings>
+      <message-resources parameter="com.etoak.struts.ApplicationResources" />
+    </struts-config>
+ 
+//ActionForm:
+    public class MyActionForm extends ActionForm{
+        //上传文件的类型为FormFile,注意setter方法对应的name值
+        private FormFile myfile;
+ 
+        public FormFile getMyfile() {
+            return myfile;
+        }
+         
+        public void setUp(FormFile myfile) {
+            this.myfile = myfile;
+        }
+         
+        //软编码
+        @Override
+        public void reset(ActionMapping mapping, HttpServletRequest request) {
+            try {
+                request.setCharacterEncoding("utf-8");
+            } catch (Exception e) {
+                // TODO: handle exception
+                e.printStackTrace();
+            }
+            super.reset(mapping, request);
+        }
+    }
+ 
+//Action:
+    public class MyAction extends Action{
+ 
+        @Override
+        public ActionForward execute(ActionMapping mapping, ActionForm form,
+                HttpServletRequest request, HttpServletResponse response)
+                throws Exception {
+            //获取上传文件
+            MyActionForm myform = (MyActionForm)form;
+            //myfile就是用户上传的文件的实例
+            FormFile myfile = myform.getMyfile();
+            //获取上传文件的全名
+            String fileName = myfile.getFileName();
+            //设置文件上传后另存为的路径
+            File file = new File(request.getSession().getServletContext().getRealPath("images"));
+            //如果路径不存在
+            if(!file.exists()){
+                //创建路径
+                file.mkdir();
+            }
+            //设置一个输入流
+            InputStream is = myfile.getInputStream();
+            //设置一个输出流
+            OutputStream os = new FileOutputStream(file+"/"+fileName);
+            int len;
+            byte[] b = new byte[1024];
+            while((len=is.read(b))!=-1){
+                os.write(b,0,len);
+            }
+            os.flush();
+            os.close();
+            return mapping.findForward("suc");
+        }
+    }
+//------------------------------------------
+/*struts1的下载*/
+ 
+/*index.jsp中*/
+    <form action="download.do" method = "post">
+            下载文件名:<input type = "text" name = "filename" />
+            <br/>
+            <input type  = "submit" value = "确定" />
+    </form>
+     
+struts-config.xml文件中
+    <struts-config>
+      <form-beans>
+        <!--这里用的动态表单-->
+        <form-bean name="down" type="org.apache.struts.action.DynaActionForm">
+            <form-property name="filename" type="java.lang.String"></form-property>
+        </form-bean>
+      </form-beans>
+       
+      <action-mappings>
+        <action path="/download" type = "com.etoak.action.MyDownAction" name = "down"></action>
+      </action-mappings>
+       
+      <message-resources parameter="com.etoak.struts.ApplicationResources" />
+    </struts-config>
+ 
+Action:
+public class MyDownAction extends DownloadAction{
+ 
+    @Override
+    protected StreamInfo getStreamInfo(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
+        //获取要下载的文件名
+        DynaActionForm myform = (DynaActionForm)form;
+        String filename = myform.getString("filename");
+        //设置文件的下载路径
+        final String path = request.getSession().getServletContext().getRealPath("/images")+"/"+filename;
+        //要下载文件,首先要提交给浏览器头信息
+        //attachment表示使用附件来下载,浏览器会给予一个提示
+        //online:浏览器自动打开要下载的文件
+        response.setHeader("content-Disposition", "attachment;filename="+ new String(filename.getBytes("utf-8"),"iso-8859-1"));
+        return new DownloadAction.StreamInfo(){
+ 
+            public String getContentType() {
+                //设置允许下载的文件类型
+                //这个类型是MIME数据类型,application/file表示任何数据类型都可以下载
+                return "application/file";
+            }
+ 
+            public InputStream getInputStream() throws IOException {
+                //设置下载的路径信息
+                return new FileInputStream(path);
+            }
+        };
+    }
+}
+ 
+//==============================================================================================================================================
+ 
+/*struts2 的上传和下载*/
+ 
+/*struts2 的上传*/
+ 
+//index.jsp文件中
+    <form action="upload.action" method = "post" enctype = "multipart/form-data">
+        <input type = "file" name = "myfile" /><br/>
+        <input type = "submit" value = "上传" />
+    </form>
+    <s:actionerror/>  <!--添加action级别的错误信息,默认上传容量是2M,超过则接收错误信息-->
+ 
+//struts.xml文件中
+    <package name = "etoak" extends = "struts-default">
+        <action name = "upload" class = "com.etoak.action.UploadAction">
+            <result>/upload_ok.jsp</result>
+            <!--默认上传大小为2M,超过则不执行action中的execute方法,直接返回错误信息-->
+            <result name = "input">/index.jsp</result>
+        </action>
+    </package>
+ 
+/UploadAction:
+public class UploadAction extends ActionSupport {
+    ///要有这三个属性  myfile对应页面的name值
+    private File myfile;
+    private String myfileFileName;
+    private String myfileContextType;
+     
+    public File getMyfile() {
+        return myfile;
+    }
+ 
+    public void setMyfile(File myfile) {
+        this.myfile = myfile;
+    }
+ 
+    public String getMyfileFileName() {
+        return myfileFileName;
+    }
+ 
+    public void setMyfileFileName(String myfileFileName) {
+        this.myfileFileName = myfileFileName;
+    }
+ 
+    public String getMyfileContextType() {
+        return myfileContextType;
+    }
+ 
+    public void setMyfileContextType(String myfileContextType) {
+        this.myfileContextType = myfileContextType;
+    }
+ 
+    @Override
+    public String execute() throws Exception {
+        /*
+         * 从封装文件中获取一个输入流
+         * 在目标路径创建一个新文件,从新文件中获取一个输出流
+         */
+        //设置上传的路径
+        String path = ServletActionContext.getServletContext().getRealPath("/file");
+        //使用UUID给上传的文件重新命名
+        String filename = new UUIDGenerator().generate().toString()+myfileFileName.substring(myfileFileName.indexOf("."));
+        //创建要上传的文件的File对象
+        File newFile = new File(path+"/"+filename);
+        //获取输入流
+        InputStream is = new FileInputStream(myfile);
+        //获取输出流
+        OutputStream os = new FileOutputStream(newFile);
+        //上传
+        int len = 0;
+        byte[] b = new byte[1024];
+        while((len = is.read(b))!=-1){
+            os.write(b, 0, len);
+        }
+        is.close();
+        os.flush();
+        os.close();
+         
+        return SUCCESS;
+    }
+}
+ 
+//------------------------------------------
+/*struts2 的下载*/
+ 
+/*index.jsp文件中*/
+    <form action="download.action" method = "post">
+        请输入要下载的文件名:
+        <input type = "text" name = "filename" />
+        <input type = "submit" value = "下载" />
+    </form>
+ 
+<pre name="code" class="java">/*<span style="font-family: Arial, Helvetica, sans-serif;">struts.xml文件中*/</span></pre>
+    <div class="divmar k"></div>

@@ -1,0 +1,30 @@
+package com.ocean.log4j2;
+ 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+ 
+public class Log4j2Testing {
+ 
+    private static Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
+     
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+ 
+        for(int i=0; i<10; i++){
+            logger.trace("===root trace");
+            logger.debug("===root debug");
+            logger.info("===root info");
+            logger.warn("===root warn");
+            logger.error("===root error");
+            logger.fatal("===root fatal");
+             
+            try {
+                Thread.sleep(10000);//µÈ10ÃëÖÓ
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+ 
+}

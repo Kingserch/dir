@@ -1,0 +1,529 @@
+calendar。js
+ 
+<!--
+/**
+ * Calendar
+ * @param   beginYear           1990
+ * @param   endYear             2010
+ * @param   language            0(zh_cn)|1(en_us)|2(en_en)|3(zh_tw)
+ * @param   patternDelimiter    "-"
+ * @param   date2StringPattern  "yyyy-MM-dd"
+ * @param   string2DatePattern  "ymd"
+ * @version 1.0 build 2006-04-01
+ * @version 1.1 build 2006-12-17
+ * @author  KimSoft (jinqinghua [at] gmail.com)
+ * NOTE!    you can use it free, but keep the copyright please
+ * IMPORTANT:you must include this script file inner html body elment 
+ */
+function Calendar(beginYear, endYear, language, patternDelimiter, date2StringPattern, string2DatePattern) {
+    this.beginYear = beginYear || 1990;
+    this.endYear   = endYear   || 2020;
+    this.language  = language  || 0;
+    this.patternDelimiter = patternDelimiter     || "-";
+    this.date2StringPattern = date2StringPattern || Calendar.language["date2StringPattern"][this.language].replace(/\-/g, this.patternDelimiter);
+    this.string2DatePattern = string2DatePattern || Calendar.language["string2DatePattern"][this.language];
+     
+    this.dateControl = null;
+    this.panel  = this.getElementById("__calendarPanel");
+    this.iframe = window.frames["__calendarIframe"];
+    this.form   = null;
+     
+    this.date = new Date();
+    this.year = this.date.getFullYear();
+    this.month = this.date.getMonth();
+     
+    this.colors = {"bg_cur_day":"#00CC33","bg_over":"#EFEFEF","bg_out":"#FFCC00"}
+};
+ 
+Calendar.language = {
+    "year"   : ["\u5e74", "", "", "\u5e74"],
+    "months" : [
+                ["\u4e00\u6708","\u4e8c\u6708","\u4e09\u6708","\u56db\u6708","\u4e94\u6708","\u516d\u6708","\u4e03\u6708","\u516b\u6708","\u4e5d\u6708","\u5341\u6708","\u5341\u4e00\u6708","\u5341\u4e8c\u6708"],
+                ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],
+                ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],
+                ["\u4e00\u6708","\u4e8c\u6708","\u4e09\u6708","\u56db\u6708","\u4e94\u6708","\u516d\u6708","\u4e03\u6708","\u516b\u6708","\u4e5d\u6708","\u5341\u6708","\u5341\u4e00\u6708","\u5341\u4e8c\u6708"]
+                ],
+    "weeks"  : [["\u65e5","\u4e00","\u4e8c","\u4e09","\u56db","\u4e94","\u516d"],
+                ["Sun","Mon","Tur","Wed","Thu","Fri","Sat"],
+                ["Sun","Mon","Tur","Wed","Thu","Fri","Sat"],
+                ["\u65e5","\u4e00","\u4e8c","\u4e09","\u56db","\u4e94","\u516d"]
+        ],
+    "clear"  : ["\u6e05\u7a7a", "Clear", "Clear", "\u6e05\u7a7a"],
+    "today"  : ["\u4eca\u5929", "Today", "Today", "\u4eca\u5929"],
+    "close"  : ["\u5173\u95ed", "Close", "Close", "\u95dc\u9589"],
+    "date2StringPattern" : ["yyyy-MM-dd", "yyyy-MM-dd", "yyyy-MM-dd", "yyyy-MM-dd"],
+    "string2DatePattern" : ["ymd","ymd", "ymd", "ymd"]
+};
+ 
+Calendar.prototype.draw = function() {
+    calendar = this;
+     
+    var _cs = [];
+    _cs[_cs.length] = '<form id="__calendarForm" name="__calendarForm" method="post">';
+    _cs[_cs.length] = '<table id="__calendarTable" width="100%" border="0" cellpadding="3" cellspacing="1" align="center">';
+    _cs[_cs.length] = ' <tr>';
+    _cs[_cs.length] = '  <th><input class="l" name="goPrevMonthButton" type="button" id="goPrevMonthButton" value="&lt;" \/><\/th>';
+    _cs[_cs.length] = '  <th colspan="5"><select class="year" name="yearSelect" id="yearSelect"><\/select><select class="month" name="monthSelect" id="monthSelect"><\/select><\/th>';
+    _cs[_cs.length] = '  <th><input class="r" name="goNextMonthButton" type="button" id="goNextMonthButton" value="&gt;" \/><\/th>';
+    _cs[_cs.length] = ' <\/tr>';
+    _cs[_cs.length] = ' <tr>';
+    for(var i = 0; i < 7; i++) {
+        _cs[_cs.length] = '<th class="theader">';
+        _cs[_cs.length] = Calendar.language["weeks"][this.language][i];
+        _cs[_cs.length] = '<\/th>';   
+    }
+    _cs[_cs.length] = '<\/tr>';
+    for(var i = 0; i < 6; i++){
+        _cs[_cs.length] = '<tr align="center">';
+        for(var j = 0; j < 7; j++) {
+            switch (j) {
+                case 0: _cs[_cs.length] = '<td class="sun">&nbsp;<\/td>'; break;
+                case 6: _cs[_cs.length] = '<td class="sat">&nbsp;<\/td>'; break;
+                default:_cs[_cs.length] = '<td class="normal">&nbsp;<\/td>'; break;
+            }
+        }
+        _cs[_cs.length] = '<\/tr>';
+    }
+    _cs[_cs.length] = ' <tr>';
+    _cs[_cs.length] = '  <th colspan="2"><input type="button" class="b" name="clearButton" id="clearButton" \/><\/th>';
+    _cs[_cs.length] = '  <th colspan="3"><input type="button" class="b" name="selectTodayButton" id="selectTodayButton" \/><\/th>';
+    _cs[_cs.length] = '  <th colspan="2"><input type="button" class="b" name="closeButton" id="closeButton" \/><\/th>';
+    _cs[_cs.length] = ' <\/tr>';
+    _cs[_cs.length] = '<\/table>';
+    _cs[_cs.length] = '<\/form>';
+     
+    this.iframe.document.body.innerHTML = _cs.join("");
+    this.form = this.iframe.document.forms["__calendarForm"];
+ 
+    this.form.clearButton.value = Calendar.language["clear"][this.language];
+    this.form.selectTodayButton.value = Calendar.language["today"][this.language];
+    this.form.closeButton.value = Calendar.language["close"][this.language];
+     
+    this.form.goPrevMonthButton.onclick = function () {calendar.goPrevMonth(this);}
+    this.form.goNextMonthButton.onclick = function () {calendar.goNextMonth(this);}
+    this.form.yearSelect.onchange = function () {calendar.update(this);}
+    this.form.monthSelect.onchange = function () {calendar.update(this);}
+     
+    this.form.clearButton.onclick = function () {calendar.dateControl.value = "";calendar.hide();}
+    this.form.closeButton.onclick = function () {calendar.hide();}
+    this.form.selectTodayButton.onclick = function () {
+        var today = new Date();
+        calendar.date = today;
+        calendar.year = today.getFullYear();
+        calendar.month = today.getMonth();
+        calendar.dateControl.value = today.format(calendar.date2StringPattern);
+        calendar.hide();
+    }
+};
+ 
+Calendar.prototype.bindYear = function() {
+    var ys = this.form.yearSelect;
+    ys.length = 0;
+    for (var i = this.beginYear; i <= this.endYear; i++){
+        ys.options[ys.length] = new Option(i + Calendar.language["year"][this.language], i);
+    }
+};
+ 
+Calendar.prototype.bindMonth = function() {
+    var ms = this.form.monthSelect;
+    ms.length = 0;
+    for (var i = 0; i < 12; i++){
+        ms.options[ms.length] = new Option(Calendar.language["months"][this.language][i], i);
+    }
+};
+ 
+Calendar.prototype.goPrevMonth = function(e){
+    if (this.year == this.beginYear && this.month == 0){return;}
+    this.month--;
+    if (this.month == -1) {
+        this.year--;
+        this.month = 11;
+    }
+    this.date = new Date(this.year, this.month, 1);
+    this.changeSelect();
+    this.bindData();
+};
+ 
+Calendar.prototype.goNextMonth = function(e){
+    if (this.year == this.endYear && this.month == 11){return;}
+    this.month++;
+    if (this.month == 12) {
+        this.year++;
+        this.month = 0;
+    }
+    this.date = new Date(this.year, this.month, 1);
+    this.changeSelect();
+    this.bindData();
+};
+ 
+Calendar.prototype.changeSelect = function() {
+    var ys = this.form.yearSelect;
+    var ms = this.form.monthSelect;
+    for (var i= 0; i < ys.length; i++){
+        if (ys.options[i].value == this.date.getFullYear()){
+            ys[i].selected = true;
+            break;
+        }
+    }
+    for (var i= 0; i < ms.length; i++){
+        if (ms.options[i].value == this.date.getMonth()){
+            ms[i].selected = true;
+            break;
+        }
+    }
+};
+ 
+Calendar.prototype.update = function (e){
+    this.year  = e.form.yearSelect.options[e.form.yearSelect.selectedIndex].value;
+    this.month = e.form.monthSelect.options[e.form.monthSelect.selectedIndex].value;
+    this.date = new Date(this.year, this.month, 1);
+    this.changeSelect();
+    this.bindData();
+};
+ 
+Calendar.prototype.bindData = function () {
+    var calendar = this;
+    var dateArray = this.getMonthViewDateArray(this.date.getFullYear(), this.date.getMonth());
+    var tds = this.getElementsByTagName("td", this.getElementById("__calendarTable", this.iframe.document));
+    for(var i = 0; i < tds.length; i++) {
+        tds[i].style.backgroundColor = calendar.colors["bg_over"];
+        tds[i].onclick = null;
+        tds[i].onmouseover = null;
+        tds[i].onmouseout = null;
+        tds[i].innerHTML = dateArray[i] || "&nbsp;";
+        if (i > dateArray.length - 1) continue;
+        if (dateArray[i]){
+            tds[i].onclick = function () {
+                if (calendar.dateControl){
+                    calendar.dateControl.value = new Date(calendar.date.getFullYear(),
+                                                        calendar.date.getMonth(),
+                                                        this.innerHTML).format(calendar.date2StringPattern);
+                }
+                calendar.hide();
+            }
+            tds[i].onmouseover = function () {this.style.backgroundColor = calendar.colors["bg_out"];}
+            tds[i].onmouseout  = function () {this.style.backgroundColor = calendar.colors["bg_over"];}
+            var today = new Date();
+            if (today.getFullYear() == calendar.date.getFullYear()) {
+                if (today.getMonth() == calendar.date.getMonth()) {
+                    if (today.getDate() == dateArray[i]) {
+                        tds[i].style.backgroundColor = calendar.colors["bg_cur_day"];
+                        tds[i].onmouseover = function () {this.style.backgroundColor = calendar.colors["bg_out"];}
+                        tds[i].onmouseout  = function () {this.style.backgroundColor = calendar.colors["bg_cur_day"];}
+                    }
+                }
+            }
+        }//end if
+    }//end for
+};
+ 
+Calendar.prototype.getMonthViewDateArray = function (y, m) {
+    var dateArray = new Array(42);
+    var dayOfFirstDate = new Date(y, m, 1).getDay();
+    var dateCountOfMonth = new Date(y, m + 1, 0).getDate();
+    for (var i = 0; i < dateCountOfMonth; i++) {
+        dateArray[i + dayOfFirstDate] = i + 1;
+    }
+    return dateArray;
+};
+ 
+Calendar.prototype.show = function (dateControl, popuControl) {
+    if (this.panel.style.visibility == "visible") {
+        this.panel.style.visibility = "hidden";
+    }
+    if (!dateControl){
+        throw new Error("arguments[0] is necessary!")
+    }
+    this.dateControl = dateControl;
+    popuControl = popuControl || dateControl;
+ 
+    this.draw();
+    this.bindYear();
+    this.bindMonth();
+    if (dateControl.value.length > 0){
+        this.date  = new Date(dateControl.value.toDate(this.patternDelimiter, this.string2DatePattern));
+        this.year  = this.date.getFullYear();
+        this.month = this.date.getMonth();
+    }
+    this.changeSelect();
+    this.bindData();
+ 
+    var xy = this.getAbsPoint(popuControl);
+    this.panel.style.left = xy.x + "px";
+    this.panel.style.top = (xy.y + dateControl.offsetHeight) + "px";
+    this.panel.style.visibility = "visible";
+};
+ 
+Calendar.prototype.hide = function() {
+    this.panel.style.visibility = "hidden";
+};
+ 
+Calendar.prototype.getElementById = function(id, object){
+    object = object || document;
+    return document.getElementById ? object.getElementById(id) : document.all(id);
+};
+ 
+Calendar.prototype.getElementsByTagName = function(tagName, object){
+    object = object || document;
+    return document.getElementsByTagName ? object.getElementsByTagName(tagName) : document.all.tags(tagName);
+};
+ 
+Calendar.prototype.getAbsPoint = function (e){
+    var x = e.offsetLeft;
+    var y = e.offsetTop;
+    while(e = e.offsetParent){
+        x += e.offsetLeft;
+        y += e.offsetTop;
+    }
+    return {"x": x, "y": y};
+};
+ 
+/**
+ * @param   d the delimiter
+ * @param   p the pattern of your date
+ * @author  meizz
+ * @author  kimsoft add w+ pattern
+ */
+Date.prototype.format = function(style) {
+    var o = {
+        "M+" : this.getMonth() + 1, //month
+        "d+" : this.getDate(),      //day
+        "h+" : this.getHours(),     //hour
+        "m+" : this.getMinutes(),   //minute
+        "s+" : this.getSeconds(),   //second
+        "w+" : "\u65e5\u4e00\u4e8c\u4e09\u56db\u4e94\u516d".charAt(this.getDay()),   //week
+        "q+" : Math.floor((this.getMonth() + 3) / 3),  //quarter
+        "S"  : this.getMilliseconds() //millisecond
+    }
+    if (/(y+)/.test(style)) {
+        style = style.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    }
+    for(var k in o){
+        if (new RegExp("("+ k +")").test(style)){
+            style = style.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+        }
+    }
+    return style;
+};
+ 
+/**
+ * @param d the delimiter
+ * @param p the pattern of your date
+ * @rebuilder kimsoft
+ * @version build 2006.12.15
+ */
+String.prototype.toDate = function(delimiter, pattern) {
+    delimiter = delimiter || "-";
+    pattern = pattern || "ymd";
+    var a = this.split(delimiter);
+    var y = parseInt(a[pattern.indexOf("y")], 10);
+    //remember to change this next century ;)
+    if(y.toString().length <= 2) y += 2000;
+    if(isNaN(y)) y = new Date().getFullYear();
+    var m = parseInt(a[pattern.indexOf("m")], 10) - 1;
+    var d = parseInt(a[pattern.indexOf("d")], 10);
+    if(isNaN(d)) d = 1;
+    return new Date(y, m, d);
+};
+ 
+document.writeln('<div id="__calendarPanel" style="position:absolute;visibility:hidden;z-index:9999;background-color:#FFFFFF;border:1px solid #666666;width:200px;height:216px;">');
+document.writeln('<iframe name="__calendarIframe" id="__calendarIframe" width="100%" height="100%" scrolling="no" frameborder="0" style="margin:0px;"><\/iframe>');
+var __ci = window.frames['__calendarIframe'];
+__ci.document.writeln('<!DOCTYPE html PUBLIC "-\/\/W3C\/\/DTD XHTML 1.0 Transitional\/\/EN" "http:\/\/www.w3.org\/TR\/xhtml1\/DTD\/xhtml1-transitional.dtd">');
+__ci.document.writeln('<html xmlns="http:\/\/www.w3.org\/1999\/xhtml">');
+__ci.document.writeln('<head>');
+__ci.document.writeln('<meta http-equiv="Content-Type" content="text\/html; charset=utf-8" \/>');
+__ci.document.writeln('<title>Web Calendar(UTF-8) Written By KimSoft<\/title>');
+__ci.document.writeln('<style type="text\/css">');
+__ci.document.writeln('<!--');
+__ci.document.writeln('body {font-size:12px;margin:0px;text-align:center;}');
+__ci.document.writeln('form {margin:0px;}');
+__ci.document.writeln('select {font-size:12px;background-color:#EFEFEF;}');
+__ci.document.writeln('table {border:0px solid #CCCCCC;background-color:#FFFFFF}');
+__ci.document.writeln('th {font-size:12px;font-weight:normal;background-color:#FFFFFF;}');
+__ci.document.writeln('th.theader {font-weight:normal;background-color:#666666;color:#FFFFFF;width:24px;}');
+__ci.document.writeln('select.year {width:64px;}');
+__ci.document.writeln('select.month {width:60px;}');
+__ci.document.writeln('td {font-size:12px;text-align:center;}');
+__ci.document.writeln('td.sat {color:#0000FF;background-color:#EFEFEF;}');
+__ci.document.writeln('td.sun {color:#FF0000;background-color:#EFEFEF;}');
+__ci.document.writeln('td.normal {background-color:#EFEFEF;}');
+__ci.document.writeln('input.l {border: 1px solid #CCCCCC;background-color:#EFEFEF;width:20px;height:20px;}');
+__ci.document.writeln('input.r {border: 1px solid #CCCCCC;background-color:#EFEFEF;width:20px;height:20px;}');
+__ci.document.writeln('input.b {border: 1px solid #CCCCCC;background-color:#EFEFEF;width:100%;height:20px;}');
+__ci.document.writeln('-->');
+__ci.document.writeln('<\/style>');
+__ci.document.writeln('<\/head>');
+__ci.document.writeln('<body>');
+__ci.document.writeln('<\/body>');
+__ci.document.writeln('<\/html>');
+__ci.document.close();
+document.writeln('<\/div>');
+var calendar = new Calendar();
+//-->
+ 
+help.html
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>kimosft-jscalendar 开发文档</title>
+<style type="text/css">
+<!--
+body {
+    font-family: "微软雅黑", Tahoma, Verdana;
+    font-size: 12px;
+    font-weight: normal;
+    margin: 50px 10px;
+}
+span, label, p, input {
+    font-family: "微软雅黑", Tahoma, Verdana;
+    font-size: 12px;
+    font-weight: normal;
+}
+form {
+    margin: 0;
+    padding: 0;
+}
+ul {
+    margin: 0;
+}
+h1 {
+    font-family: "微软雅黑", Tahoma, Verdana;
+    font-size: 16px;
+    font-weight: bold;
+}
+h2 {
+    font-family: "微软雅黑", Tahoma, Verdana;
+    font-size: 14px;
+    font-weight: bold;
+}
+div.effect {
+    border: 1px dotted #3C78B5;
+    background-color: #D8E4F1;
+    padding: 10px;
+    width: 98%;
+}
+div.source {
+    border: 1px solid #CCC;/*#090*/
+    background-color: #F5F5F5;/*#DFD*/
+    padding: 10px;
+    width: 98%;
+}
+.color_red {
+    color:#FF0000;
+}
+.b {
+    font-weight: bold;
+}
+-->
+</style>
+</head>
+<body>
+<script type="text/javascript" src="calendar.js"></script>
+<form id="form1" name="form1" method="post" action="">
+  <h1>1、什么是 kimsoft-jscalendar ?</h1>
+  <ul>
+    <li>一个简洁的avaScript日历控件，可在Java Web 项目，.NET Web 项目中使用</li>
+  </ul>
+  <h1>2、kimsoft-jscalendar 有什么特点？</h1>
+  <ul>
+    <li>1、小巧，单文件 </li>
+    <li>2、支持多语言，并可自由扩充（目前支持简体中文，繁体中文，英语美国和英语英国）</li>
+    <li> 3、兼容ie6.0+, firefox1.0+, Opera9，其它浏览器未测试</li>
+    <li>4、回显选定的时间，这是很多其它日历控件没有的 </li>
+    <li>5、Apache license 2.0，商业友好。可免费使用，自由修改传播，但请保留版权信息</li>
+    <li>6、用 iframe 解决 IE 中层在 select 控件上显示的问题</li>
+    <li>7、其它特点有特发现...</li>
+  </ul>
+  <h1>3、版本:</h1>
+  <ul>
+    <li>V20080409（制作了此帮助文档） <a href="http://code.google.com/p/kimsoft-jscalendar/downloads/list" target="_blank">下载</a></li>
+    <li>V20080322（第一次在Google Code上发布）</li>
+  </ul>
+  <h1>4、使用说明:</h1>
+  <h2>4.1、将 js 文件导入到页面中（可以是 html, jsp, asp, aspx, php）等。</h2>
+  <div class="source">&lt;script type=&quot;text/javascript&quot; src=&quot;calendar.js&quot;&gt;&lt;/script&gt;</div>
+  <br />
+  注意以下点：
+  <ul>
+    <li>&nbsp;calendar.js 文件内容编写是UTF-8，请一定要将此文件的编码设置为UTF-8</li>
+    <li>&nbsp;上面的代码内容<span class="color_red b">一定要放在HTML的&lt;body&gt;&lt;/body&gt;之间</span>，特别是在符合XHTML规范的文档中</li>
+    <li>包含此文件后，此页面已经自动实例化了一个日历对象 calendar，现在就可以使用了</li>
+  </ul>
+  <h2>4.2、一个最简单的例子<br />
+  </h2>
+  <div class="source">用预定义的 calendar 对象生成日历代码：&lt;input name=&quot;date&quot; type=&quot;text&quot; id=&quot;date&quot; onclick=<strong>&quot;calendar.show(this);</strong>&quot; size=&quot;10&quot; maxlength=&quot;10&quot; readonly=&quot;readonly&quot; /&gt;<br />
+  </div>
+  <br />
+  <div class="effect">效果：
+    <input name="date" type="text" id="date" onclick="calendar.show(this);" size="10" maxlength="10" readonly="readonly" />
+  </div>
+  <br />
+  当然也可以这样：<br />
+  </p>
+  <div class="source">new 一个新的日历对象并生成日历代码：&lt;input name=&quot;date&quot; type=&quot;text&quot; id=&quot;date&quot; onclick=<strong>&quot;new Calendar().show(this);</strong>&quot; size=&quot;10&quot; maxlength=&quot;10&quot; readonly=&quot;readonly &quot;/&gt;<br />
+  </div>
+  <br />
+  <div class="effect">效果：
+    <input name="date2" type="text" id="date2" onclick="new Calendar().show(this);" size="10" maxlength="10" readonly="readonly" />
+  </div>
+  <br />
+  <h2>4.3、指定开始年份和结束年份的日历<br />
+  </h2>
+  <div class="source"> 指定开始年份和结束年份的日历代码：&lt;input name=&quot;range_date&quot; type=&quot;text&quot; id=&quot;range_date&quot; onclick=&quot;new Calendar(2000, 2008).show(this);&quot; size=&quot;10&quot; maxlength=&quot;10&quot; readonly=&quot;readonly&quot; /&gt;<br />
+  </div>
+  <br />
+  <div class="effect"> 只能选择 2000 到 2008年间的日期：
+    <input name="range_date" type="text" id="range_date" onclick="new Calendar(2000, 2008).show(this);" size="10" maxlength="10" readonly="readonly" />
+  </div>
+  <h2>4.4、多语言版本支持（可自由扩充），目前支持的语言：0(zh_cn)|1(en_us)|2(en_en)|3(zh_tw)</h2>
+  <div class="source"> 中文日历代码：    &lt;input name=&quot;cn_date&quot; type=&quot;text&quot; id=&quot;cn_date&quot; onclick=&quot;new Calendar().show(this);&quot; size=&quot;10&quot; maxlength=&quot;10&quot; readonly=&quot;readonly&quot; /&gt;<br />
+  </div>
+  <br />
+  <div class="effect">中文日历效果：
+    <input name="cn_date" type="text" id="cn_date" onclick="new Calendar().show(this);" size="10" maxlength="10" readonly="readonly"/>
+  </div>
+  <br />
+  <div class="source"> 繁体中文日历代码：    &lt;input name=&quot;tw_date&quot; type=&quot;text&quot; id=&quot;tw_date&quot; onclick=&quot;new Calendar(null, null, 3).show(this);&quot; size=&quot;10&quot; maxlength=&quot;10&quot; readonly=&quot;readonly&quot; /&gt;<br />
+  </div>
+  <br />
+  <div class="effect">繁体中文日历效果：
+    <input name="tw_date" type="text" id="tw_date" onclick="new Calendar(null, null, 3).show(this);" size="10" maxlength="10" readonly="readonly" />
+    <br />
+  </div>
+  <br />
+  <div class="source"> 英文日历代码：    &lt;input name=&quot;en_date&quot; type=&quot;text&quot; id=&quot;en_date&quot; onclick=&quot;new Calendar(null, null, 1).show(this);&quot; size=&quot;10&quot; maxlength=&quot;10&quot; readonly=&quot;readonly&quot; /&gt;<br />
+  </div>
+  <br />
+  <div class="effect">英文日历效果：
+    <input name="en_date" type="text" id="en_date" onclick="new Calendar(null, null, 1).show(this);" size="10" maxlength="10" readonly="readonly" />
+  </div>
+  <h2>4.5、在一个控件上点击选择，在另外一个控件上显示日期</h2>
+  <div class="source"> 代码：<br />
+    &lt;input name=&quot;control_date&quot; type=&quot;text&quot; id=&quot;control_date&quot;size=&quot;10&quot; maxlength=&quot;10&quot; readonly=&quot;readonly&quot; /&gt;<br />
+    &lt;input type=&quot;button&quot; name=&quot;button&quot; id=&quot;button&quot; value=&quot;选择日期&quot; onclick=&quot;new Calendar().show(this.form.control_date);&quot; /&gt;<br />
+  </div>
+  <br />
+  <div class="effect">效果：
+    <input name="control_date" type="text" id="control_date"size="10" maxlength="10" readonly="readonly" />
+    <label>
+    <input type="button" name="button" id="button" value="选择日期" onclick="new Calendar().show(this.form.control_date);" />
+    </label>
+  </div>
+  <h2>4.6、其它功能</h2>
+  其它功能请参考 calendar.js 源码，里面有详细的注释，本文档源码也是很好的代码资源，有问题请<a href="http://code.google.com/p/kimsoft-jscalendar/issues/list" target="_blank">提交ISSUES</a><br />
+  <h1>5、相关资源:</h1>
+  <ul>
+    <li>Google Code: <a href="http://code.google.com/p/kimsoft-jscalendar/" target="_blank">http://code.google.com/p/kimsoft-jscalendar/</a></li>
+    <li>kimsoft's Blog: <a href="http://blog.csdn.net/kimsoft" target="_blank">http://blog.csdn.net/kimsoft</a></li>
+    <li>kimsoft's Mail: <a href="mailto:jinqinghua@gmail.com">jinqinghua@gmail.com</a></li>
+  </ul>
+  <h1>6、License:</h1>
+  <ul>
+    <li>基于 Apache license 2.0，商业友好。可免费使用，自由修改传播，但请保留版权信息</li>
+  </ul>
+</form>
+</body>
+</html>
