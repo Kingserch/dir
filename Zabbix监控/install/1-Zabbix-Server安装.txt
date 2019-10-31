@@ -1,0 +1,55 @@
+Zabbix-Server服务端安装
+1)配置时间同步
+yum install ntp -y 
+systemctl enable ntpd
+systemctl start ntpd
+
+2)客户端安装zabbix
+rpm -Uvh https://repo.zabbix.com/zabbix/4.0/rhel/7/x86_64/zabbix-release-4.0-1.el7.noarch.rpm
+yum install -y zabbix-server-mysql zabbix-web-mysql zabbix-agent zabbix-get
+
+3)数据库操作
+create database zabbix character set utf8 collate utf8_bin;  #创建zabbix数据库
+grant all privileges on zabbix.* to zabbix@localhost identified by 'zabbix'; #授权zabbix用户从localhost访问，对zabbix数据库有完全控制权限
+flush privileges;
+zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -uzabbix -p zabbix #初始化数据库结构并导入数据
+
+4)配置zabbix_server.conf
+[root@s-30 /]# egrep -v "^#|^$" /etc/zabbix/zabbix_server.conf
+LogFile=/var/log/zabbix/zabbix_server.log
+LogFileSize=0
+PidFile=/var/run/zabbix/zabbix_server.pid
+SocketDir=/var/run/zabbix
+DBHost=localhost				#需要修改
+DBName=zabbix				#默认
+DBUser=zabbix				#默认
+DBPassword=zabbix				#连接数据库的密码
+SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
+Timeout=4
+AlertScriptsPath=/usr/lib/zabbix/alertscripts
+ExternalScripts=/usr/lib/zabbix/externalscripts
+LogSlowQueries=3000
+
+#更改时区，让时间同步
+vim /etc/httpd/conf.d/zabbix.conf
+php_value date.timezone Asia/shanghai
+
+启动zabbix
+systemctl start zabbix-server
+systemctl enable zabbix-server
+
+5)创建告警和扩展脚本目录(../install)
+mkdir -p /etc/zabbix/alertsscripts  /etc/zabbix/externalscripts
+
+防火墙设置
+#CentOS 7操作系统防火墙规则设置
+shell# firewall-cmd --permanent --add-port=80/tcp
+shell# firewall-cmd --permanent --add-port=10050/tcp
+shell# firewall-cmd --permanent --add-port=10051/tcp
+shell# firewall-cmd –reload
+上述规则中，10050是Agent的端口，Agent采用被动方式，Server主动连接Agent的10050端口；10051是Server的端口，Agent采用主动或Trapper方式，会连接Server的10051端口。对于具有防火墙的网络环境，采取相同的防火墙规则策略即可。
+2．SELinux的设置
+如果操作系统已开启SELinux，则需要设置语句开启允许SELinux相关策略。
+
+shell# setsebool -P httpd_can_connect_zabbix on
+shell# setsebool -P httpd_can_network_connect_db on
