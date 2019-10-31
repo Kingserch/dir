@@ -38,7 +38,7 @@ php_value date.timezone Asia/shanghai
 systemctl start zabbix-server
 systemctl enable zabbix-server
 
-5)创建告警和扩展脚本目录(../install)
+5)创建告警和扩展脚本目录()
 mkdir -p /etc/zabbix/alertsscripts  /etc/zabbix/externalscripts
 
 防火墙设置
