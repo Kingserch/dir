@@ -58,8 +58,8 @@ setenforce 0 	#0´ú±ípermissive£¬1´ú±íenforcing£»Ò²¿ÉÖ±½ÓÓÃpermissiveºÍenforcing£
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config   #ĞèÒªÖØÆôÏµÍ³£¬ÓÀ¾Ã¹Ø±Õ
 getenforce 	#»ñÈ¡µ±Ç°SELinuxµÄÔËĞĞ×´Ì¬
 
-
-Zabbix-WebÁ¬½ÓÊı¾İ¿âºÍZabbix-Server¶Ë¿ÚµÄÏà¹ØÅäÖÃĞÅÏ¢ÈçÏÂ£º
+7)zabbixÏà¹ØÅäÖÃ
+7.1)Zabbix-WebÁ¬½ÓÊı¾İ¿âºÍZabbix-Server¶Ë¿ÚµÄÏà¹ØÅäÖÃĞÅÏ¢ÈçÏÂ£º
 [root@s-30 zabbix]# cat /etc/zabbix/web/zabbix.conf.php 
 <?php
 // Zabbix GUI configuration file.
@@ -86,3 +86,18 @@ $ZBX_SERVER_PORT = '10051';
 $ZBX_SERVER_NAME = 'zbx4';
 
 $IMAGE_FORMAT_DEFAULT = IMAGE_FORMAT_PNG;
+7.2) /etc/zabbix/zabbix_server.conf ÖĞµÄ²ÎÊı
+[root@s-30 zabbix]# egrep -v "^#|^$" /etc/zabbix/zabbix_server.conf
+LogFile=/var/log/zabbix/zabbix_server.log
+LogFileSize=0
+PidFile=/var/run/zabbix/zabbix_server.pid
+SocketDir=/var/run/zabbix
+DBHost=localhost				#Êı¾İ¿âµÄipÈç¹û²»ÔÚ±¾»ú£¬ÒªĞ´ÕæÊµµÄiP
+DBName=zabbix				#Êı¾İ¿âµÄÃû³Æ
+DBUser=zabbix				#Êı¾İ¿âµÄÓÃ»§
+DBPassword=zabbix				#Êı¾İ¿âµÄÃÜÂë
+SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
+Timeout=4
+AlertScriptsPath=/usr/lib/zabbix/alertscripts
+ExternalScripts=/usr/lib/zabbix/externalscripts
+LogSlowQueries=3000
