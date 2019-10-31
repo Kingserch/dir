@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
  /**
-   * @author MrWang
+   * @author king
    **/
  
 public class ImageValidServlet extends HttpServlet {

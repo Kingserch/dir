@@ -9,9 +9,7 @@ calendar¡£js
  * @param   patternDelimiter    "-"
  * @param   date2StringPattern  "yyyy-MM-dd"
  * @param   string2DatePattern  "ymd"
- * @version 1.0 build 2006-04-01
- * @version 1.1 build 2006-12-17
- * @author  KimSoft (jinqinghua [at] gmail.com)
+ * @author king
  * NOTE!    you can use it free, but keep the copyright please
  * IMPORTANT:you must include this script file inner html body elment 
  */
