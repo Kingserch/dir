@@ -1,0 +1,12 @@
+在CentOS下配置SNMP监控，命令如下：
+yum -y install net-snmp 
+vim /etc/snmp/snmpd.conf 
+com2sec mynetwork 192.168.31.130 public_monitor
+com2sec mynetwork 127.0.0.1 public
+group MyROGroup v2c mynetwork
+access MyROGroup "" any noauth prefix all none none
+view all included .1 80
+
+#CentOS 7
+systemctl enable snmpd    #添加到开机启动项
+systemctl start  snmpd    #启动服务
