@@ -5,7 +5,7 @@ support Zabbix 3.0 4.0
 MySQL  version 5.6  5.7 8.0 
 ``` 
 
-# 1. configration 
+# 1. configration （配置）
 Before run this scripts,maybe you should modify it   
 修改脚本中的账号信息，如下所示
 ```
@@ -43,7 +43,7 @@ table trends_uint  create partitions p201807
 table trends       create partitions p201808
 table trends_uint  create partitions p201808
 ```
-# 3. check partitions
+# 3. check partitions(检查分区)
 验证脚本是否执行成功  
 ```
 shell# mysql -uzabbix -pzabbix zabbix
@@ -73,7 +73,7 @@ MariaDB [zabbix]>
 当看到PARTITION的时候，说明分区已创建成功。  
 if you see this,everything is OK.
 
-# 4. set crontab
+# 4. set crontab（定时任务）
 the crontab remove old partitions every day    
 每天的定时任务，是由linux的crontab去实现的，需确保Linux服务器的crond启动成功。否则会引起新分区无法自动创建的问题   
 ```
@@ -81,7 +81,7 @@ shell# crontab -e
 1 0 * * * /usr/sbin/partitiontables_zabbix.sh
 Shell# chmod 700 /usr/sbin/partitiontables_zabbix.sh
 ```
-# truncate table(only with delete data)
+# truncate table(only with delete data)[截断表（仅限删除数据）]
 if you database is so big,you should clean data first,then run this scripts   
 
 当运行此脚本的时候，Zabbix库有存量数据，此时，建议清空想表的数据，然后再执行此脚本   
