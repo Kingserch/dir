@@ -1,7 +1,9 @@
 Backup zabbix mysql database
 
 ```
-shell# chmod 700 /usr/sbin/zabbix_mysqldump.sh
-shell# crontab -e 
-0 3 * * *  /usr/sbin/zabbix_mysqldump.sh mysqldump
+chmod 700 /scripts/zabbix-mysql-backup-master/zabbix_mysqldump.sh		
+crontab -e 
+0 3 * * *  /scripts/zabbix-mysql-backup-master/zabbix_mysqldump.sh mysqldump
 ```
+
+##Usage method
