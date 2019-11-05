@@ -178,3 +178,25 @@ select table_name, (data_length+index_length)/1024/1024 as total_mb, table_rows 
 对zabbix数据库做表分区（按天）
 web页面关闭Housekeeper
 Administrattion（管理）——>General——>Housekeeper，去掉History和Trends选项的勾选状态，可关闭History，Trends，Housekeeper功能，
+mysql，zabbix数据库分表脚本  https://github.com/Kingserch/dir/tree/master/Zabbix/scripts/partitiontables_zabbix-master
+因为是生产环境，history trends表中数据较大，所以需要先清空在执行脚本
+清空语句如下：
+mysql> use zabbix; 
+mysql> truncate table history; 
+mysql> optimize table history; 
+mysql> truncate table history_str; 
+mysql> optimize table history_str; 
+mysql> truncate table history_uint; 
+mysql> optimize table history_uint; 
+mysql> truncate table history_log; 
+mysql> optimize table history_log; 
+mysql> truncate table history_text; 
+mysql> optimize table history_text; 
+mysql> truncate table trends; 
+mysql> optimize table trends; 
+mysql> truncate table trends_uint; 
+mysql> optimize table trends_uint; 
+
+运行表分区脚本，为防止网络中断后引起脚本运行中断导致数据库故障，我们用screen后台执行的方式
+yum install screen -y 
+screen  -R  zabbix
