@@ -2,7 +2,7 @@
 #author: king
 #mail: 838915764#qq.com
 #license: apache 2.0
-#from :https://github.com/zabbix-book/zabbix-mysql-backup
+#from :https://github.com/Kingserch/dir/blob/master/Zabbix/scripts/zabbix-mysql-backup/zabbix_mysqldump.sh
 #usage: chmod 700 ${PATH}/zabbix_mysqldump.sh
 #crontab: 0 3 * * * ${PATH}/zabbix_mysqldump.sh mysqldump
 
