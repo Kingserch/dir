@@ -20,3 +20,4 @@ tail -1 /var/log/zabbix/zabbix_server.log #查看日志
 二）跨版本升级
 切记不可中断zabbi_server进程，否则，再次启动进程，可能会造成表结构更改失败的结果，从而导致升级失败，遇到这情况
 最简单的办法就是将表结构删除（history trends 表需要保留），使用/mysql_back进行恢复，数据恢复完成，重启zabbix，在进行自动升级
+https://github.com/Kingserch/dir/tree/zabbix-4.0.0alpha8
