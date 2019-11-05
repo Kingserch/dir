@@ -1,0 +1,10 @@
+通信安全
+可以使用zabbix 自带的加密方式进行通信https://www.zabbix.com/documentation/4.0/manual/encryption
+Zabbix数据库备份
+备份采用单表备份，对监控的历史展示数据不做备份（history* trends* Acknowledges ALerts Auditlog Events service_alarms）
+查看mysql跟mysqldump的路径
+[root@s-30 /]# whereis mysqldump
+mysqldump: /usr/bin/mysqldump /usr/share/man/man1/mysqldump.1.gz
+[root@s-30 /]# whereis mysql
+mysql: /usr/bin/mysql /usr/lib64/mysql /usr/share/mysql /usr/share/man/man1/mysql.1.gz
+[root@s-30 /]# 
