@@ -7,4 +7,4 @@ Zabbix数据库备份
 mysqldump: /usr/bin/mysqldump /usr/share/man/man1/mysqldump.1.gz
 [root@s-30 /]# whereis mysql
 mysql: /usr/bin/mysql /usr/lib64/mysql /usr/share/mysql /usr/share/man/man1/mysql.1.gz
-[root@s-30 /]# 
+
