@@ -4,7 +4,7 @@
 # Apache License Version 2.0
 # date: 2019-11-04
 # funtion: create parition for zabbix MySQL 
-# repo: https://github.com/Kingserch/dir/tree/master/Zabbix监控/scripts/partitiontables_zabbix-master（分区表）
+# repo: https://github.com/Kingserch/dir/tree/master/Zabbix/scripts/partitiontables_zabbix-master
 
 #配置环境变量
 ZABBIX_USER="zabbix"
