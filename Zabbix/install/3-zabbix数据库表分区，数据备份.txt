@@ -1,4 +1,4 @@
-对zabbix数据库做表分区（按天）
+1)对zabbix数据库做表分区（按天）
 web页面关闭Housekeeper
 Administrattion（管理）——>General——>Housekeeper，去掉History和Trends选项的勾选状态，可关闭History，Trends，Housekeeper功能，
 mysql，zabbix数据库分表脚本  https://github.com/Kingserch/dir/tree/master/Zabbix/scripts/partitiontables_zabbix-master
@@ -73,3 +73,14 @@ mysql>
 2019-11-05
 [root@s-30 ~]# 
 到此表分分区已经完成，这对提高数据库的性能具有重要的作用，对mysql的优化还可以通过调整其本身的配置参数来完成
+
+
+2)通信安全
+可以使用zabbix 自带的加密方式进行通信https://www.zabbix.com/documentation/4.0/manual/encryption
+3)Zabbix数据库备份
+备份采用单表备份，对监控的历史展示数据不做备份（history* trends* Acknowledges ALerts Auditlog Events service_alarms）
+查看mysql跟mysqldump的路径
+[root@s-30 /]# whereis mysqldump
+mysqldump: /usr/bin/mysqldump /usr/share/man/man1/mysqldump.1.gz
+[root@s-30 /]# whereis mysql
+mysql: /usr/bin/mysql /usr/lib64/mysql /usr/share/mysql /usr/share/man/man1/mysql.1.gz
