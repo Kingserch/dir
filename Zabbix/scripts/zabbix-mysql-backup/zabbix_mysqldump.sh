@@ -19,14 +19,14 @@ NC='\e[0m' # 没有颜色
 source /etc/bashrc
 source /etc/profile
 
-MySQL_USER=zabbix
-MySQL_PASSWORD=zabbix
-MySQL_HOST=localhost
-MySQL_PORT=3306
-MySQL_DUMP_PATH=/mysql_backup
-MYSQL_BIN_PATH=/usr/bin/mysql
+MySQL_USER=zabbix		#mysql的用户
+MySQL_PASSWORD=zabbix	#mysql的密码
+MySQL_HOST=localhost	#msyql的服务器ip
+MySQL_PORT=3306			#mysql的端口，多个端口用;分隔
+MySQL_DUMP_PATH=/mysql_backup	#mysql备份的路径
+MYSQL_BIN_PATH=/usr/bin/mysql	#mysql命令的路径
 MYSQL_DUMP_BIN_PATH=/usr/bin/mysqldump
-MySQL_DATABASE_NAME=zabbix
+MySQL_DATABASE_NAME=zabbix		#库的名称
 DATE=$(date '+%Y-%m-%d')
 
 MySQLDUMP () {
