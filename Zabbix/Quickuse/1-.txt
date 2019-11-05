@@ -1,0 +1,56 @@
+mysql> select *from zabbix.users where alias='Admin';	#查询zabbix库users表中的Admin用户
++--------+-------+--------+---------------+----------------------------------+-----+-----------+------------+-------+---------+------+------------+----------------+------------+---------------+---------------+
+| userid | alias | name   | surname       | passwd                           | url | autologin | autologout | lang  | refresh | type | theme      | attempt_failed | attempt_ip | attempt_clock | rows_per_page |
++--------+-------+--------+---------------+----------------------------------+-----+-----------+------------+-------+---------+------+------------+----------------+------------+---------------+---------------+
+|      1 | Admin | Zabbix | Administrator | 5fce1b3e34b520afeffb37ce08c7cd66 |     |         1 | 0          | en_US | 30s     |    3 | blue-theme |              0 |            |             0 |            50 |
++--------+-------+--------+---------------+----------------------------------+-----+-----------+------------+-------+---------+------+------------+----------------+------------+---------------+---------------+
+1 row in set (0.00 sec)
+
+mysql> update zabbix.users set passwd=md5('zabbix') where alias='Admin';	#更改密码
+Query OK, 0 rows affected (0.01 sec)
+Rows matched: 1  Changed: 0  Warnings: 0
+
+mysql> flush privileges;		#刷新
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> 
+配置流程
+1)添加主机组（Host groups）
+Configuration（配置）——>Host groups （主机群组）——>Create host group （创建组）
+创建一个web app 组，创建成功可以在数据库中查询到mysql -uzabbix -pzabbix zabbix -e "select * from hstgrp"
+mysql> use zabbix
+Database changed
+mysql> select * from hstgrp;
++---------+-----------------------------+----------+-------+
+| groupid | name                        | internal | flags |
++---------+-----------------------------+----------+-------+
+|       1 | Templates                   |        0 |     0 |
+|       2 | Linux servers               |        0 |     0 |
+|       4 | Zabbix servers              |        0 |     0 |
+|       5 | Discovered hosts            |        1 |     0 |
+|       6 | Virtual machines            |        0 |     0 |
+|       7 | Hypervisors                 |        0 |     0 |
+|       8 | Templates/Modules           |        0 |     0 |
+|       9 | Templates/Network devices   |        0 |     0 |
+|      10 | Templates/Operating systems |        0 |     0 |
+|      11 | Templates/Server hardware   |        0 |     0 |
+|      12 | Templates/Applications      |        0 |     0 |
+|      13 | Templates/Databases         |        0 |     0 |
+|      14 | Templates/Virtualization    |        0 |     0 |
+|      15 | RedisMontior                |        0 |     0 |
+|      16 | web app                     |        0 |     0 |
++---------+-----------------------------+----------+-------+
+15 rows in set (0.00 sec)
+
+mysql> 
+创建好的分组可以被下级分组所继承
+Apply permissions and tag filters to all subgroups（对所有子组应用权限和标记筛选器）
+2)添加模板（Templates）
+Configuration（配置）——>Templates （模板）——>Create Templates（创建模板）
+模板具有继承的功能
+Linked template （链接模板）
+在模板中配置宏（Macros）宏主要是对变量的定义，配置宏的作用是方便在Items和Triggers中引用
+3)添加主机
+Configuration（配置）——>Hosts（主机）——>Create Host（创建主机）
+4)配置大屏
+Monitoring(检测)——>Screens（聚合图形）——>Create Screens（创建图形）
