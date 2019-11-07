@@ -6,4 +6,41 @@ https://www.zabbix.com/documentation/4.0/zh/manual    zabbix中文手册
 Configuration(配置)——>Templates （模板）——>Create Templates（创建模板）——>Items（监控项）——>Create Items（创建监控项）
 [root@s-30 web]# zabbix_get -s 127.0.0.1 -k   vm.memory.size[pavailable]
 43.374499
+2.1）在监控项中自定义key
+用户自定义参数（UserParameter）仅支持Agent的方式，对于其他方式它是不支持的。
+2.2)key自定义的语法格式
+在/etc/zabbix/zabbix_agentd.conf中配置参数，写法如下：
+UserParameter=key,command
+   自定义key的例子
+在 /etc/zabbix/zabbix_agentd.conf后面添加如下内容：
+UserParameter=get.os.type，head -1  /etc/issue
+然后重启zabbix_agentd服务（注意，修改配置后必须重启服务）。
+systemctl restart zabbix-agent.service 
+运行测试命令，查看key，语句如下：
+zabbix_get -s 127.0.0.1 -k get.os.type
+CentOS Linux release 7.5.1804 (Core) 
+这样写会导致UserParameter烦乱，所以这部分内容我们单独写一个配置文件
+vim  /etc/zabbix/zabbix_agentd.conf
+Include=/etc/zabbix/zabbix_agentd.conf.d/ 		#大约是在268行添加
+
+除了上面这种写法，还支持参数传递的写法，具体如下：
+UserParameter=key[*],command  $1  $2  $3  ……
+如果UserParameter包含特殊字符，需要开启参数
+vim  /etc/zabbix/zabbix_agentd.conf
+UnsafeUserParameters=1 
+
+3)具体操作
+1）修改Agent配置文件。
+[root@s-30 zabbix_agentd.d]#vim  /etc/zabbix/zabbix_agentd.conf
+UnsafeUserParameters=1                 			#处理特殊字符228行
+Include=/etc/zabbix/zabbix_agentd.conf.d/*.conf		#子配置文件路径268行
+2）修改子配置文件。
+[root@s-30 zabbix_agentd.d]#vim  /etc/zabbix/zabbix_agentd.conf.d/vm.memory.size.conf
+UserParameter=vm.memory.size，head -1  /etc/issue	#添加这个字段（重启zabbix-agent会生成文件）
+[root@s-30 zabbix_agentd.d]# zabbix_get -s 127.0.0.1 -k vm.memory.size
+1910075392
+[root@s-30 zabbix]# zabbix_agentd -p|grep vm\.memory
+vm.memory.size[total]                         [u|1910075392]
+
+
 
