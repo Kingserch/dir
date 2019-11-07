@@ -1,0 +1,9 @@
+1)zabbix 监控项存在于zabbix.items 表中：
+mysql> select * from zabbix.items limit 1\G
+2)如何添加监控项
+监控项可存在模板（Template）中，也可存在主机（Host），模板的作用是可以复用，对需要重复配置的监控项进行抽象归类。
+https://www.zabbix.com/documentation/4.0/zh/manual    zabbix中文手册
+Configuration(配置)——>Templates （模板）——>Create Templates（创建模板）——>Items（监控项）——>Create Items（创建监控项）
+[root@s-30 web]# zabbix_get -s 127.0.0.1 -k   vm.memory.size[pavailable]
+43.374499
+
