@@ -41,6 +41,175 @@ UserParameter=vm.memory.size，head -1  /etc/issue	#添加这个字段（重启zabbix-agen
 1910075392
 [root@s-30 zabbix]# zabbix_agentd -p|grep vm\.memory
 vm.memory.size[total]                         [u|1910075392]
+网卡监控流量的key
+[root@s-30 network-scripts]# zabbix_get  -s  127.0.0.1  -k  net.if.in[ens33,bytes]
+43448979			#这个值是网卡的进流量
 
+网卡流量监控的常用key如下：
+net.if.out[if,<mode>]
+net.if.collisions[if]
+net.if.discovery
+net.if.out[if,<mode>]
+net.if.total[if,<mode>]
 
+与网络连接相关的key
+net.tcp.listen[port]
+net.tcp.port[<ip>,port]
+net.tcp.service[service,<ip>,<port>]
+net.tcp.service.perf[service,<ip>,<port>]
+net.udp.listen[port]
+net.udp.service[service,<ip>,<port>]
+net.udp.service.perf[service,<ip>,<port>]
+net.dns[<ip>,name,<type>,<timeout>,<count>,<protocol>]
+net.dns.record[<ip>,name,<type>,<timeout>,<count>,<protocol>]
+
+监控进程的key
+kernel.maxfiles
+kernel.maxproc
+proc.mem[<name>,<user>,<mode>,<cmdline>]
+proc.num[<name>,<user>,<state>,<cmdline>]
+proc.cpu.util[<name>,<user>,<type>,<cmdline>,<mode>,<zone>]
+
+监控CPU和内存的key
+system.cpu.intr
+system.cpu.load[<cpu>,<mode>]
+system.cpu.num[<type>]
+system.cpu.switches
+system.cpu.util[<cpu>,<type>,<mode>]
+system.cpu.discovery
+vm.memory.size[<mode>]
+system.swap.in[<device>,<type>]
+system.swap.out[<device>,<type>]
+system.swap.size[<device>,<type>]
+sensor[device,sensor,<mode>]
+
+磁盘I/O监控的key
+vfs.dev.read[<device>,<type>,<mode>]
+vfs.dev.write[<device>,<type>,<mode>]
+vfs.fs.inode[fs,<mode>]
+
+文件监控的key
+vfs.file.cksum[file]
+vfs.file.contents[file,<encoding>]
+vfs.file.exists[file]
+vfs.file.md5sum[file]
+vfs.file.regexp[file,regexp,<encoding>,<start line>,<end line>,<output>]
+vfs.file.regmatch[file,regexp,<encoding>,<start line>,<end line>]
+vfs.file.size[file]
+vfs.file.time[file,<mode>]
+Vfs.fs.discovery
+vfs.fs.size[fs,<mode>]
+vfs.dir.count[dir,<regex_incl>,<regex_excl>,<types_incl>,<types_excl>,<max_depth>,<min_size>,<max_size>,<min_age>,<max_age>]
+
+与操作系统相关的key
+system.boottime
+system.hw.chassis[<info>]
+system.hw.cpu[<cpu>,<info>]
+system.hw.devices[<type>]
+system.hw.macaddr[<interface>,<format>]
+system.localtime[<type>]
+system.run[command,<mode>]
+system.stat[resource,<type>]
+system.sw.arch
+system.sw.os[<info>]
+system.sw.packages[<package>,<manager>,<format>]
+system.uname
+system.uptime
+system.users.num
+
+与Web性能相关的key
+web.page.get[host,<path>,<port>]
+web.page.perf[host,<path>,<port>]
+web.page.regexp[host,<path>,<port>,<regexp>,<length>,<output>]
+
+监控硬件信息的key
+sensor[device,sensor,<mode>]
+
+日志监控的key，需要主动模式的支持。
+log[file,<regexp>,<encoding>,<maxlines>,<mode>,<output>]
+logrt[file_pattern,<regexp>,<encoding>,<maxlines>,<mode>,<output>]
+关于更多的Zabbix-Agent Key，请参考官方文档:https://www.zabbix.com/documentation/4.0/manual/config/items/itemtypes/zabbix_agent
+
+Windows监控的key
+eventlog[name,<regexp>,<severity>,<source>,<eventid>,<maxlines>,<mode>]
+net.if.list
+perf_counter[counter,<interval>]
+proc_info[<process>,<attribute>,<type>]
+service.discovery
+service.info[service,<param>]
+service_state[*]
+services[<type>,<state>,<exclude>]
+wmi.get[<namespace>,<query>]
+关于key的详细用法，可以参考如下地址：
+https://www.zabbix.com/documentation/4.0/manual/config/items/itemtypes/zabbix_agent/win_keys
+C:\Users\king>typeperf -qx >C:\Users\king\Desktop\performance_counters.txt
+在Windows中安装好Zabbix-Agent后，配置zabbix_agentd.conf，即可采集数据。
+
+Simple Check 监控方式
+simple check 监控方式支持TCP UDP VMware 的数据获取
+zabbix-server主动发起请求，源地址是zabbix-server服务器的IP地址，目标地址为远程的IP地址，
+
+Simple check支持的key
+icmpping[<target>,<packets>,<interval>,<size>,<timeout>]
+含义：这个key是用来ping目标IP地址是否存活的。
+检测结果：0表示不存活，1表示存活。
+数据类型：整数。
+target：可以不用填写，可以为IP地址，也可以为DNS。
+packets：表示ping多少个数据包。
+interval：表示间隔多久ping一次，单位为毫秒。
+size：表示包的大小，单位是字节。
+timeout：表示超时时间，单位为毫秒。
+举例：icmpping[,3,10]表示ping 3个包，间隔10毫秒，检测目标IP地址是否存活。
+
+icmppingloss[<target>,<packets>,<interval>,<size>,<timeout>]
+含义：这个key是用来ping目标IP地址的丢包率的。参数同icmpping。
+数据类型：浮点数。
+举例：icmppingloss[,3]表示ping 3个包，间隔10毫秒，检测目标IP地址的丢包率。
+
+icmppingsec[<target>,<packets>,<interval>,<size>,<timeout>,<mode>]
+含义：这个key是用来ping目标IP地址的平均响应时间的。
+数据类型：浮点数。
+mode：表示对ping的响应时间的计算，支持avg、max、min。其他参数同icmpping。
+举例：icmppingloss[,3,,,,avg]表示ping 3个包，检测目标IP地址的平均响应时间。
+
+net.tcp.service[service,<ip>,<port>]
+含义：检测目标TCP服务的存活。
+数据类型：整数。
+检测结果：0表示不存活，1表示存活。
+service：可以为ssh、ldap、smtp、ftp、http、pop、nntp、imap、tcp、https、telnet。
+ip：表示连接service的IP地址，默认为Item的接口。
+port：表示去连接service的IP地址，默认为service的标准端口。
+举例：net.tcp.service[ftp]表示检测FTP是否存活。
+
+net.tcp.service.perf[service,<ip>,<port>]
+含义：检测目标TCP服务的连接响应时间。参数同net.tcp.service。
+数据类型：浮点数。
+检测结果：0.000000表示服务不存活。
+举例：net.tcp.service.perf[ftp]表示检测FTP的连接响应时间。
+
+net.udp.service[service,<ip>,<port>]
+含义：检测目标UDP服务的存活。
+数据类型：整数。
+检测结果：0表示不存活，1表示存活。
+service：可以为ntp。
+ip：表示连接service的IP地址，默认为Item的接口。
+port：表示连接service的IP地址，默认为service的标准端口。
+举例：net.udp.service[ntp]表示检测NTP是否存活。
+
+net.udp.service.perf[service,<ip>,<port>]
+含义：检测目标UDP服务的连接响应时间。参数同net.udp.service。
+数据类型：浮点数。
+检测结果：0.000000表示服务不存活。
+举例：net.udp.service.perf[ntp]表示检测NTP的连接响应时间。
+
+关于这些key的详细说明，请参考：https://www.zabbix.com/documentation/4.0/manual/config/items/itemtypes/simple _checks
+
+超时处理
+超过zabbix_server.conf中设置的超时时间（最大超时时间为30秒）后，Zabbix会放弃处理。
+ICMP ping
+Zabbix 用fping处理ICMP ping请求，所以需要安装fping程序。在zabbix_server.conf中，FpingLocation参数是用于配置fping程序路径的。
+由于fping默认是以root权限工作的，而Zabbix-Server是Zabbix用户运行的，所以需要对fping程序设置setuid（如果在自定义key时需要用到netstat命令，也同样要设置setuid；否则不能获取到数据，而在日志中提示权限拒绝）。
+
+chown  root:zabbix   /usr/sbin/fping
+chmod  4710   /usr/sbin/fping
 
