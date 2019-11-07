@@ -212,4 +212,23 @@ Zabbix 用fping处理ICMP ping请求，所以需要安装fping程序。在zabbix_server.conf中，
 
 chown  root:zabbix   /usr/sbin/fping
 chmod  4710   /usr/sbin/fping
+日志的监控方式
+zabbix-agent支持对日志文件的监控，可以对日志文件的关键字进行监控，日志监控支持普通的日志文件，也支持日志轮询，切割的文件
+log[/path/to/file/file_name,<regexp>,<encoding>,<maxlines>,<mode>,<output>,<maxdelay>,<options>] 
+logrt[/path/to/file/regexp_describing_filename_pattern,<regexp>,<encoding>,<maxlines>,<mode>,<output>,<maxdelay>,<options>]
+log.count[/path/to/file/file_name,<regexp>,<encoding>,<maxproclines>,<mode>, <maxdelay>,<options>]
+logrt.count[/path/to/file/regexp_describing_filename_pattern,<regexp>,<encoding>,<maxproclines>,<mode>,<maxdelay>,<options>]
+例如，我们定义了以下的key：
+
+log[/path/to/the/file,"large result buffer allocation.*Entries: ([0-9]+)",,,,\1]
+当日志中出现以下记录时，则匹配，其中([0-9]+)会匹配到Entries后面的数值，将由“\1”输出，该key输出的数据类型为整数。该key匹配输出的是数值，而非整条日志记录。
+Fr Nov 07 2019 11:07:36.6690 */ Thread Id 1400 (GLEWF) large result buffer allocation - /Length: 437136/Entries: 5948/Client Ver: >=10/RPC ID: 41726453/User: AUser/Form: CFG:ServiceLevelAgreement
+[root@s-30 zabbix]# ll /var/log/secure
+-rw------- 1 root root 13750 Nov  7 10:59 /var/log/secure
+[root@s-30 zabbix]# chown zabbix.root /var/log/secure
+[root@s-30 zabbix]# ll /var/log/secure
+-rw------- 1 zabbix root 13750 Nov  7 10:59 /var/log/secure	#对于不方便设置权限的日志文件，可以使Zabbix-Agent采用root权限运行：
+[root@s-30 zabbix]# vim /etc/zabbix/zabbix_agentd.conf	#AllowRoot=1  在251行添加
+
+
 
