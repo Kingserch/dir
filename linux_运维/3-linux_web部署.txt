@@ -56,3 +56,13 @@ grant all on *.* to root@'%' identified by 'root';	#授权可视化工具可以连接数据库
 因为我们配置的yum  repository（仓库），所以以后yum 操作都会自动更新，所以我们可以移除mysql 的yum仓库
 yum -y remove mysql80-community-release-el7-2.noarch
 skip-grant-tables  #跳过数据库权限验证	mysql忘记密码可以在/etc/my.conf中添加这个字段，来登录修改密码
+
+安装nginx
+vim /etc/yum.repos.d/nginx.repo	#在编辑的文件中添加下面的字段 ，如果是6把下面7改6就可以了
+[nginx] 
+name=nginx repo 
+baseurl=http://nginx.org/packages/centos/7/$basearch/
+gpgcheck=0 
+enabled=1
+
+yum install nginx		#安装nginx
