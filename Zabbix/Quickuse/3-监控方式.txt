@@ -1,0 +1,5 @@
+前面总结了zabbix-agent和simple check 的俩种监控方式，
+1)聚合性监控方式
+聚合型（Aggregate）的监控方式是指将已经存储在数据库中的监控指标数值进行二次他统计运算，从而形成新的监控指标
+{Template OS Linux:system.swap.size[,pfree].last(0)}<50 and {Template OS Linux:system.swap.size[,free].last(0)}<>0
+{Zabbix server:system.swap.size[,pfree].last(0)}<50

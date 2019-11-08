@@ -231,4 +231,11 @@ Fr Nov 07 2019 11:07:36.6690 */ Thread Id 1400 (GLEWF) large result buffer alloc
 [root@s-30 zabbix]# vim /etc/zabbix/zabbix_agentd.conf	#AllowRoot=1  在251行添加
 
 
-
+计算表达式的例子：
+计算剩余磁盘的百分比	100*last("vfs.fs.size[/,free]",0)/last("vfs.fs.size[/,total]",0)	#就是剩余的磁盘值除以总数
+计算10分钟内Zabbix values的可用大小	avg("Zabbix server:zabbix[wcache,values]",600)	
+统计eth0的进出流量总和	last("net.if.in[eth0,bytes]",0)+last("net.if.out[eth0,bytes]",0)
+统计进流量占网卡总流量的百分比	100*last("net.if.in[eth0,bytes]",0)/(last("net.if.in[eth0,bytes]",0)+last("net.if.out[eth0,bytes]",0))
+对聚合监控方式的监控项（Aggregated[能写成中文吗？] Item）进行计算，注意引号需要转义
+last("grpsum[\"video\",\"net.if.out[eth0,bytes]\",\"last\",\"0\"]",0) / last("grpsum[\"video\",\"nginx_stat.sh[active]\",\"last\",\"0\"]",0)
+计算网卡的流量	last("net.if.in[ens33]",0)+last("net.if.in[ens331]",0)+last("net.if.in[ens332]",0)	#就是主机所有的网卡相加的进流量
