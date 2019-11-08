@@ -1,6 +1,6 @@
 安装JDK
 https://pan.baidu.com/s/1hs3EaIPtGYDHufJjCLupaA?提取码:6xw5
-mkdir /usr/java
+mkdir /usr/java		#创建java目录
 cp /home/software/jdk-8u181-linux-x64.tar.gz /usr/java/
 cd /usr/java
 tar -xvf jdk-8u181-linux-x64.tar.gz   
