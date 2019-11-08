@@ -13,6 +13,7 @@ source /etc/profile
 java -version
 
 安装TOMCAT
+https://pan.baidu.com/s/1SfuqLuF4y9D255NKe5soHQ?提取码:e321
 mkdir /usr/tomcat   
 cp /home/tools/apache-tomcat-8.5.39.tar.gz /usr/tomcat/
 vim /etc/profile
