@@ -28,4 +28,6 @@ cd /usr/tomcat/apache-tomcat-8.5.39/bin
 ./startup.sh
 ./shutdown.sh
 
+#!/bin/bash –xv	调试 bash 脚本
+awk -F: '$3<100' /etc/passwd 	awk 列出 UID 小于 100 的用户都是/sbin/nologin的用户
 安装MYSQL
