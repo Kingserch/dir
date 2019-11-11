@@ -123,8 +123,4 @@ group = nginx
 # systemctl start php-fpm
 #systemctl enable php-fpm
 正确的配置Nginx+PHP
-
-
-
-
-	
+https://github.com/Kingserch/dir/blob/master/linux_运维/nginx.conf
