@@ -122,5 +122,8 @@ group = nginx
 7、启动php
 # systemctl start php-fpm
 #systemctl enable php-fpm
-正确的配置Nginx+PHP
-https://github.com/Kingserch/dir/blob/master/linux_运维/nginx.conf
+
+
+配置文件路径及对应的配置文件
+在Centos7.5  /etc/nginx/	https://github.com/Kingserch/dir/blob/master/linux_运维/nginx.conf
+在Centos7.5  /etc/nginx/conf.d
