@@ -11,6 +11,16 @@ yum install -y zabbix-server-mysql zabbix-web-mysql zabbix-agent zabbix-get
 3)数据库操作
 create database zabbix character set utf8 collate utf8_bin;  #创建zabbix数据库
 grant all privileges on zabbix.* to zabbix@localhost identified by 'zabbix'; #授权zabbix用户从localhost访问，对zabbix数据库有完全控制权限
+授权的时候可能会提示,密码过短。
+mysql> grant all privileges on zabbix.* to zabbix@localhost identified by 'zabbix';
+ERROR 1819 (HY000): Your password does not satisfy the current policy requirements
+
+set global validate_password_policy=0;
+set global validate_password_length=1;
+select @@validate_password_length;
+set global validate_password_mixed_case_count=2;
+select @@validate_password_mixed_case_count;
+SHOW VARIABLES LIKE 'validate_password%';
 flush privileges;
 zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -uzabbix -p zabbix #初始化数据库结构并导入数据
 
