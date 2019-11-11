@@ -57,12 +57,74 @@ grant all on *.* to root@'%' identified by 'root';	#授权可视化工具可以连接数据库
 yum -y remove mysql80-community-release-el7-2.noarch
 skip-grant-tables  #跳过数据库权限验证	mysql忘记密码可以在/etc/my.conf中添加这个字段，来登录修改密码
 
-安装nginx
-vim /etc/yum.repos.d/nginx.repo	#在编辑的文件中添加下面的字段 ，如果是6把下面7改6就可以了
-[nginx] 
-name=nginx repo 
-baseurl=http://nginx.org/packages/centos/7/$basearch/
-gpgcheck=0 
-enabled=1
+安装Nginx
+1、建立nginx的yum仓库
+# rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+2、下载并安装nginx
+# yum install nginx 
+3、启动nginx服务
+# systemctl start nginx
+# systemctl enable nginx
+4、测试和配置
+访问你服务器的ip地址,如果出现nginx的欢迎界面，安装成功.
+系统默认的配置文件在/etc/nginx路径下，使用改配置可以正确的运行nginx。如需自定义，修改 nginx.conf 等文件即可。
 
-yum install nginx		#安装nginx
+安装php7.1
+1、配置yum源
+# rpm -Uvh http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+php7
+# rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+remi源默认并没有启动，可以通过修改repo文件来修改它。
+
+# vim /etc/yum.repos.d/remi.repo
+[remi]
+......
+enabled=1
+[remi-php56]
+......
+enabled=1
+2、确认安装的php版本
+# yum list | grep php
+3、安装php5.6
+# yum install php php-opcache php-pecl-apcu php-devel php-mbstring php-mcrypt php-mysqlnd php-phpunit-PHPUnit php-pecl-xdebug php-pecl-xhprof php-pdo php-pear php-fpm php-cli php-xml php-bcmath php-process php-gd php-common
+上面这条命令安装了一大堆东西，实际请按需安装。启用 php-opcache 及 php-pecl-apcu 能有效的提高 php 执行速度。
+
+3.1、安装php7
+如果需要安装php7，编辑/etc/yum.repos.d/remi-php70.repo文件，启用相应的yum源。
+php71w-phpunit-PHPUnit	php71w-pecl-xhprof
+# yum -y install php71w-devel php71w-fpm php71w-opcache php71w-pecl-apcu php71w-devel php71w-mbstring php71w-mcrypt php71w-mysqlnd php71w-phpunit-PHPUnit php71w-pecl-xdebug php71w-pecl-xhprof php71w-pdo php71w-pear php71w-cli php71w-xml php71w-bcmath php71w-process php71w-gd php71w-common
+安装相应的信息，扩展的话可以自己对应安装参照php5.6
+php -m命令查看
+
+4、确认php的版本
+[root@s-29 yum.repos.d]# php -v
+PHP 7.1.33 (cli) (built: Oct 26 2019 10:16:23) ( NTS )
+Copyright (c) 1997-2018 The PHP Group
+Zend Engine v3.1.0, Copyright (c) 1998-2018 Zend Technologies
+    with Zend OPcache v7.1.33, Copyright (c) 1999-2018, by Zend Technologies
+    with Xdebug v2.6.1, Copyright (c) 2002-2018, by Derick Rethans
+[root@s-29 yum.repos.d]#
+5、配置php.ini
+# vi /etc/php.ini
+理论上配置一下时区就够了
+
+date.timezone = Asia/Shanghai	#877行
+如有其他的配置可以自行配置
+
+6、配置php-fpm
+vi /etc/php-fpm.d/www.conf
+;默认情况下是apache
+user= apache	#8行
+group=apache	#10行
+; 修改为配置php所属用户为nginx
+user = nginx
+group = nginx
+7、启动php
+# systemctl start php-fpm
+#systemctl enable php-fpm
+正确的配置Nginx+PHP
+
+
+
+
+	
