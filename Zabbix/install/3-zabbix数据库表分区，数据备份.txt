@@ -1,3 +1,4 @@
+zabbix_mysql 分表 备份脚本：https://github.com/Kingserch/dir/tree/master/Zabbix/scripts
 1)对zabbix数据库做表分区（按天）
 web页面关闭Housekeeper
 Administrattion（管理）——>General——>Housekeeper，去掉History和Trends选项的勾选状态，可关闭History，Trends，Housekeeper功能，
@@ -84,3 +85,5 @@ mysql>
 mysqldump: /usr/bin/mysqldump /usr/share/man/man1/mysqldump.1.gz
 [root@s-30 /]# whereis mysql
 mysql: /usr/bin/mysql /usr/lib64/mysql /usr/share/mysql /usr/share/man/man1/mysql.1.gz
+下载mysql备份脚本:https://github.com/Kingserch/dir/tree/master/Zabbix/scripts/zabbix-mysql-backup
+脚本使用方法请看：https://github.com/Kingserch/dir/blob/master/Zabbix/scripts/zabbix-mysql-backup/README.md
