@@ -61,7 +61,7 @@ systemctl list-dependencies|grep zabbix-server	#检测
 
 5)创建告警和扩展脚本目录(../install)
 mkdir -p /etc/zabbix/alertsscripts  /etc/zabbix/externalscripts
-
+zabbix_mysql 分表 备份脚本：https://github.com/Kingserch/dir/tree/master/Zabbix/scripts
 6)如果关闭防火墙不需要配置下面，开启则需要(我维护的生产环境就没开selinux)
 6.1)防火墙设置
 #CentOS 7操作系统防火墙规则设置
