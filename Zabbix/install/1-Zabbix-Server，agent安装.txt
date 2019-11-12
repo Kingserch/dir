@@ -44,6 +44,12 @@ LogSlowQueries=3000
 vim /etc/httpd/conf.d/zabbix.conf
 php_value date.timezone Asia/shanghai
 
+需要授权zabbix用户对配置web路径的访问权限
+chown -R zabbix:zabbix /etc/zabbix/
+chown -R zabbix:zabbix /usr/share/nginx/
+chown -R zabbix:zabbix /usr/lib/zabbix/
+chmod -R 755 /etc/zabbix/web/
+chmod -R 777 /var/lib/php/session/
 启动zabbix
 systemctl start zabbix-server
 systemctl enable zabbix-server

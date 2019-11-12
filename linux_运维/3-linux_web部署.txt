@@ -111,8 +111,10 @@ date.timezone = Asia/Shanghai	#877行
 但是需要配置php连接数据库
 pdo_mysql.default_socket=/var/lib/mysql/mysql.sock	#957行
 mysqli.default_socket =/var/lib/mysql/mysql.sock		#1097行
-
-
+post_max_size=16M					#656行
+max_execution_time					#368行
+max_input_time					#378行
+max_input_time = 300				#
 6、配置php-fpm
 vi /etc/php-fpm.d/www.conf
 ;默认情况下是apache
@@ -142,5 +144,6 @@ mysqli_close($link);
 ?>
 Nginx 的配置文件
 配置文件路径及对应的配置文件
+
 在Centos7.5  /etc/nginx/	https://github.com/Kingserch/dir/blob/master/linux_运维/nginx.conf
 在Centos7.5  /etc/nginx/conf.d	https://github.com/Kingserch/dir/blob/master/linux_%E8%BF%90%E7%BB%B4/default.conf
