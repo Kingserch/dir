@@ -44,3 +44,4 @@ getenforce
 开机关闭SELinux
 法一：sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 法二：编辑/etc/selinux/config文件，将SELINUX=enforcing改为SELINUX=disabled
+systemctl list-dependencies | grep 服务的名字   检测是否加入开启启动
