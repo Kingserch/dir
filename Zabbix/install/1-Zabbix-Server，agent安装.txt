@@ -161,7 +161,7 @@ zabbix_server -R log_level_increase=poller	,3	#可以根据进程名字设置日志级别
 二)Zabbix-Agent客户端安装
 1）客服端的采集方式为Agent，snmp等
 rpm -ivh http://repo.zabbix.com/zabbix/4.0/rhel/7/x86_64/zabbix-release-4.0-1.el7.noarch.rpm #安装Zabbix官方的yum源
-yum install -y zabbix zabbix-agent  
+yum install -y  zabbix-agent  
 # 由于Zabbix-Server服务器本身也需要监控，所以在Zabbix-Server服务器中也同样需要安装Zabbix-Agent
 防火墙配置
 #CentOS 7
@@ -182,7 +182,7 @@ UnsafeUserParameters=1              	#启用特殊字符，用于自定义监控
 [root@s-30 /]# systemctl start zabbix-agent	#启动服务
 到此agent，的监控方式安装完成
 
-zabbix-get检测验证客户端的配置是否正确,命令格式如下：
+zabbix_get检测验证客户端的配置是否正确,命令格式如下：
 zabbix_get [-hV] -s <host name or IP> [-p <port>] [-I <ip address>] -k <key>
 -s	远程zabbix-agent的ip地址或者主机名字
 -p	远程zabbix-agent的端口
