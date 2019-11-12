@@ -1,6 +1,6 @@
 #!/bin/bash
 #author: king
-#mail: 838915764#qq.com
+#mail: 838915764qq.com
 #license: apache 2.0
 #from :https://github.com/Kingserch/dir/blob/master/Zabbix/scripts/zabbix-mysql-backup/zabbix_mysqldump.sh
 #usage: chmod 700 ${PATH}/zabbix_mysqldump.sh
@@ -19,14 +19,14 @@ NC='\e[0m' # 没有颜色
 source /etc/bashrc
 source /etc/profile
 
-MySQL_USER=zabbix		#mysql的用户
-MySQL_PASSWORD=zabbix	#mysql的密码
-MySQL_HOST=localhost	#msyql的服务器ip
-MySQL_PORT=3306			#mysql的端口，多个端口用;分隔
-MySQL_DUMP_PATH=/mysql_backup	#mysql备份的路径，默认备份到/下的mysql_backup目录中
-MYSQL_BIN_PATH=/usr/bin/mysql	#mysql命令的路径
+MySQL_USER=zabbix
+MySQL_PASSWORD=zabbix
+MySQL_HOST=localhost
+MySQL_PORT=3306
+MySQL_DUMP_PATH=/mysql_backup
+MYSQL_BIN_PATH=/usr/bin/mysql
 MYSQL_DUMP_BIN_PATH=/usr/bin/mysqldump
-MySQL_DATABASE_NAME=zabbix		#库的名称
+MySQL_DATABASE_NAME=zabbix
 DATE=$(date '+%Y-%m-%d')
 
 MySQLDUMP () {
