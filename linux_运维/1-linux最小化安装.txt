@@ -1,4 +1,5 @@
 linux 最小化安装
+nmtui 可以设置网卡哦
 cat /etc/sysconfig/network-scripts/ifcfg-ens33 
 sed -i 's#ONBOOT=no#ONBOOT=yes#g' /etc/sysconfig/network-scripts/ifcfg-ens33  （sed - 's###g'）
 grep ONBOOT /etc/sysconfig/network-scripts/ifcfg-ens33
@@ -17,8 +18,29 @@ psmisc 含有killall pstree 命令
 net-tools 含有netstat ifconfig route arp 等命令
 bash-completion bash-completion-extras tab补全功能包
 vim-enhanced  vim编辑器工具包
+#安装工具需要的包
 yum install psmisc bash-completion vim-enhanced  net-tools* -y
 yum grouplist 	#查看所有包组名称（包括安装和未安装的，）
 yum groupinstall  "Cinnamon" -y 	#安装组包（"组包名字"如果发现系统安装过程中落下的组包）
 到此安装完成
 
+临时关闭防火墙
+systemctl stop firewalld
+永久防火墙开机自关闭
+systemctl disable firewalld
+临时打开防火墙
+systemctl start firewalld
+防火墙开机启动
+systemctl enable firewalld
+查看防火墙状态
+systemctl status firewalld
+
+临时关闭SELinux
+setenforce 0
+临时打开SELinux
+setenforce 1
+查看SELinux状态
+getenforce
+开机关闭SELinux
+法一：sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+法二：编辑/etc/selinux/config文件，将SELINUX=enforcing改为SELINUX=disabled
