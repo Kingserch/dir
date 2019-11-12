@@ -52,8 +52,9 @@ chown -R zabbix:zabbix /usr/lib/zabbix/
 chmod -R 755 /etc/zabbix/web/
 chmod -R 777 /var/lib/php/session/
 启动zabbix
-systemctl start zabbix-server
-systemctl enable zabbix-server
+systemctl start zabbix-server		#启动
+systemctl enable zabbix-server		#开机自启动
+systemctl list-dependencies|grep zabbix-server	#检测
 
 5)创建告警和扩展脚本目录(../install)
 mkdir -p /etc/zabbix/alertsscripts  /etc/zabbix/externalscripts
