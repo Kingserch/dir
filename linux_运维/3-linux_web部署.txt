@@ -72,18 +72,8 @@ skip-grant-tables  #跳过数据库权限验证	mysql忘记密码可以在/etc/my.conf中添加这个
 
 安装php7.1
 1、配置yum源
-# rpm -Uvh http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-php7
-# rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
-remi源默认并没有启动，可以通过修改repo文件来修改它。
-
-# vim /etc/yum.repos.d/remi.repo
-[remi]
-......
-enabled=1
-[remi-php56]
-......
-enabled=1
+rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
 2、确认安装的php版本
 # yum list | grep php
 3、安装php5.6
@@ -91,10 +81,11 @@ enabled=1
 上面这条命令安装了一大堆东西，实际请按需安装。启用 php-opcache 及 php-pecl-apcu 能有效的提高 php 执行速度。
 
 3.1、安装php7
-如果需要安装php7，编辑/etc/yum.repos.d/remi-php70.repo文件，启用相应的yum源。
-php71w-phpunit-PHPUnit	php71w-pecl-xhprof
+如果需要安装php7
 # yum -y install php71w-devel php71w-fpm php71w-opcache php71w-pecl-apcu php71w-devel php71w-mbstring php71w-mcrypt php71w-mysqlnd php71w-phpunit-PHPUnit php71w-pecl-xdebug php71w-pecl-xhprof php71w-pdo php71w-pear php71w-cli php71w-xml php71w-bcmath php71w-process php71w-gd php71w-common
 安装相应的信息，扩展的话可以自己对应安装参照php5.6
+安装php扩展源：
+yum -y install php71w-pecl-memcached php71w-pecl-redis php71w-mysql
 php -m命令查看
 
 4、确认php的版本
