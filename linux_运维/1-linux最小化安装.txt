@@ -19,7 +19,7 @@ net-tools 含有netstat ifconfig route arp 等命令
 bash-completion bash-completion-extras tab补全功能包
 vim-enhanced  vim编辑器工具包
 #安装工具需要的包
-yum install psmisc bash-completion vim-enhanced  net-tools* -y
+yum install psmisc bash-completion vim-enhanced  net-tools* yum-utils  -y 
 yum grouplist 	#查看所有包组名称（包括安装和未安装的，）
 yum groupinstall  "Cinnamon" -y 	#安装组包（"组包名字"如果发现系统安装过程中落下的组包）
 到此安装完成

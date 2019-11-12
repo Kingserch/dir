@@ -33,6 +33,7 @@ cd /usr/tomcat/apache-tomcat-8.5.39/bin
 
 #!/bin/bash –xv	调试 bash 脚本
 awk -F: '$3<100' /etc/passwd 	awk 列出 UID 小于 100 的用户都是/sbin/nologin的用户
+
 安装MYSQL
 rpm -Uvh https://repo.mysql.com//mysql80-community-release-el7-2.noarch.rpm	#要是安装最新版本 直接安装就可以了
 yum repolist all | grep mysql		#查看yum 源中的mysql版本
