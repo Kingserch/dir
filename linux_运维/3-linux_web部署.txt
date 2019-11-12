@@ -104,9 +104,9 @@ date.timezone = Asia/Shanghai	#877行
 pdo_mysql.default_socket=/var/lib/mysql/mysql.sock	#957行
 mysqli.default_socket =/var/lib/mysql/mysql.sock		#1097行
 post_max_size=16M					#656行
-max_execution_time					#368行
-max_input_time					#378行
-max_input_time = 300				#
+max_execution_time=300				#368行，0表示没有限制
+max_input_time=300					#378行
+
 6、配置php-fpm
 vi /etc/php-fpm.d/www.conf
 ;默认情况下是apache
