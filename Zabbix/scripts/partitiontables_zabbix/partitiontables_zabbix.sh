@@ -1,6 +1,6 @@
 #!/bin/bash
 # author: king
-# mail: 838915764#qq.com
+# mail: 838915764qq.com
 # Apache License Version 2.0
 # date: 2019-11-04
 # funtion: create parition for zabbix MySQL 
