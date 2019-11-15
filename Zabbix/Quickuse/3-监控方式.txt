@@ -1,5 +1,66 @@
 前面总结了zabbix-agent和simple check 的俩种监控方式，
 1)聚合性监控方式
 聚合型（Aggregate）的监控方式是指将已经存储在数据库中的监控指标数值进行二次他统计运算，从而形成新的监控指标
-{Template OS Linux:system.swap.size[,pfree].last(0)}<50 and {Template OS Linux:system.swap.size[,free].last(0)}<>0
-{Zabbix server:system.swap.size[,pfree].last(0)}<50	and {Zabbix server:system.swap.size[,pfree].last(0)}<>0
+grpsum["MySQL Servers","vfs.fs.size[/,total]",last]
+含义：对MySQL Servers组监控项vfs.fs.size[/,total]，最近一次监控数据求和，即求该组/分区总的容量。
+grpavg["MySQL Servers","system.cpu.load[,avg1]",last]
+含义：对MySQL Servers组监控项system.cpu.load[,avg1]，最近一次监控数据求平均值，可以得出该组的load平均值。
+grpavg["MySQL Servers",mysql.qps,avg,5m]
+含义：对MySQL Servers组监控项mysql.qps，最近5分钟内每个主机所获取到的监控数据的平均值（avg），再次求平均值（grpavg），得出该组mysql.qps 5分钟内的平均值。
+grpavg[["Servers A","Servers B","Servers C"],system.cpu.load,last]
+含义：对Servers A、Servers B、Servers C三个主机组监控项system.cpu.load，每个主机的最近一次监控数据求平均值。
+grpsum[["WEB-1"," WEB-2","WEB-3"],nginx.404.log ,sum,10m]
+含义：对WEB-1、WEB-2、WEB-3三个主机组监控项nginx.404.log，每个主机近10分钟出现404的次数和，再次求和（grpsum），即求三3个分组404一共出现的次数。
+grpsum["Linux",log[/var/log/message,error],count,30m]
+含义：对Linux主机组监控项log[/var/log/message,error]，每个主机近30分钟出现的错误日志次数[指什么次数？]（即日志的条数），再次求和（grpsum），即求该组一共出现的匹配错误日志的个数。
+2)SSh监控方式
+对于ssh 监控方式，支持ssh密码访问目标主机，也支持秘钥访问目标主机，简单来说就zabbix-server配置秘钥存储路径->生成配置ssh rsa秘钥->分发秘钥到被监控的机器，->配置key获取数据
+[root@link lib]# vim /etc/zabbix/zabbix_server.conf 		修改SSHKeyLocation=/var/lib/zabbix/.ssh
+[root@link lib]# systemctl restart zabbix-server
+[root@link lib]# mkdir -p /var/lib/zabbix/.ssh		#创建对应的目录
+[root@link zabbix]# ls -a				#.ssh是个隐藏文件
+.  ..  .ssh
+[root@link zabbix]# chown zabbix.zabbix -R /var/lib/zabbix/.ssh/	#授权zabbix用户对该目录的管理权限
+[root@link zabbix]# sudo -u zabbix ssh-keygen -t rsa -b 2048		#用zabbix用户来创建秘钥对
+Generating public/private rsa key pair.
+Enter file in which to save the key (/var/lib/zabbix/.ssh/id_rsa): 		#公私秘钥路径
+Enter passphrase (empty for no passphrase): 			#输入密码(zabbix)，这里我们建议不输入密码，直接回车
+Enter same passphrase again: 					#在此输入密码(zabbix)，建议直接回车
+Your identification has been saved in /var/lib/zabbix/.ssh/id_rsa.
+Your public key has been saved in /var/lib/zabbix/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:CntVqj4J9q7mFHWVRRaTls1Q9IykTHAeZ09lcBOIHTA zabbix@link
+The key's randomart image is:
++---[RSA 2048]----+
+|          oE#@X+B|
+|         ..B=XoO.|
+|      . . ..+ . +|
+|     . . o       |
+|    o   S        |
+|    o+ +         |
+|   .oo+.         |
+|   ..o+          |
+|   oooo.         |
++----[SHA256]-----+
+[root@link zabbix]# ls /var/lib/zabbix/.ssh/ -l
+total 8
+-rw------- 1 zabbix zabbix 1766 Nov 15 15:47 id_rsa		#私钥
+-rw-r--r-- 1 zabbix zabbix  393 Nov 15 15:47 id_rsa.pub	#公钥，这个就是将分发的秘钥
+[root@link zabbix]# sudo -u zabbix ssh-copy-id root@192.168.31.132	#用zabbix 用户分发公钥
+/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/var/lib/zabbix/.ssh/id_rsa.pub"
+The authenticity of host '192.168.31.132 (192.168.31.132)' can't be established.
+ECDSA key fingerprint is SHA256:gN5jnG+x7JXdtLPeiMfpr1b6FLBFadD4ziHkO6uu9L4.
+ECDSA key fingerprint is MD5:a4:54:65:aa:15:95:90:b4:7c:0a:08:87:e2:73:c1:8f.
+Are you sure you want to continue connecting (yes/no)? yes		#是否需要继续，yes
+/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+root@192.168.31.132's password: 				#输入分发到机器root密码
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'root@192.168.31.132'"
+and check to make sure that only the key(s) you wanted were added.
+[root@link zabbix]# 
+
+
+
