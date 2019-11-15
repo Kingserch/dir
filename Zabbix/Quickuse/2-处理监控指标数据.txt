@@ -228,7 +228,9 @@ Fr Nov 07 2019 11:07:36.6690 */ Thread Id 1400 (GLEWF) large result buffer alloc
 [root@s-30 zabbix]# chown zabbix.root /var/log/secure
 [root@s-30 zabbix]# ll /var/log/secure
 -rw------- 1 zabbix root 13750 Nov  7 10:59 /var/log/secure	#对于不方便设置权限的日志文件，可以使Zabbix-Agent采用root权限运行：
-[root@s-30 zabbix]# vim /etc/zabbix/zabbix_agentd.conf	#AllowRoot=1  在251行添加
+[root@s-30 zabbix]# vim /etc/zabbix/zabbix_agentd.conf	#
+AllowRoot=1  在251行添加
+systemctl restart zabbix-agent	#然后重启服务
 
 
 计算表达式的例子：
