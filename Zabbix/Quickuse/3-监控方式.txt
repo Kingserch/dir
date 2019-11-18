@@ -61,6 +61,18 @@ Number of key(s) added: 1
 Now try logging into the machine, with:   "ssh 'root@192.168.31.132'"
 and check to make sure that only the key(s) you wanted were added.
 [root@link zabbix]# 
-
+3)Telnet监控方式，扩展检测监控方式
+扩展检测配置
+ vim /etc/zabbix/zabbix_server.conf 
+AlertScriptsPath=/etc/zabbix/alertscripts		#告警脚本的路径，517行
+ExternalScripts=/etc/zabbix/externalscripts	#外部脚本的路径，529行
+systemctl restart zabbix-server
+[root@c-138 externalscripts]# vim echo.sh
+#!/bin/bash
+echo "$1" "$2"
+[root@c-138 externalscripts]# chmod 755 /etc/zabbix/externalscripts/echo.sh
+[root@c-138 externalscripts]# chown zabbix:zabbix /etc/zabbix/externalscripts/echo.sh
+扩展检测的监控方式是通过zabbix-server来执行fork进程的，但过多的fork进程会带来额外的性能开销，启动过多的扩展检测监控指标会让zabbix-server的性能降低，因此尽量
+减少使用
 
 
