@@ -106,3 +106,8 @@ number(/document/item/value)，将从xml字符串取出10
 	<value>
 	<item>
 <document>
+
+宏的使用
+宏的作用是便于在模板中，item trigger中对数据进行变量的引用，宏成名称可以未{$名称}，宏的字符范围A~Z,0~9.
+全局宏（Global macros），作用范围：模板，主机
+Administration(用户)->General(一般)->Macros(宏)
