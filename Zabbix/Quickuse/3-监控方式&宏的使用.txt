@@ -111,3 +111,10 @@ number(/document/item/value)，将从xml字符串取出10
 宏的作用是便于在模板中，item trigger中对数据进行变量的引用，宏成名称可以未{$名称}，宏的字符范围A~Z,0~9.
 全局宏（Global macros），作用范围：模板，主机
 Administration(用户)->General(一般)->Macros(宏)
+宏模板（Template macros）作用范围：当前模板
+Configuration（配置）->Templates （模板）->Macros(宏)
+主机宏（Host macros）作用范围：当前主机
+Configuration（配置）->Hosts -> Zabbix server->Macros(宏)
+配置值映射
+值映射功能是将监控指标取到的数据替换为文本进行展示
+Administration(用户)->General(一般)->value mapping
