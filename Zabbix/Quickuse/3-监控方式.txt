@@ -73,6 +73,36 @@ echo "$1" "$2"
 [root@c-138 externalscripts]# chmod 755 /etc/zabbix/externalscripts/echo.sh
 [root@c-138 externalscripts]# chown zabbix:zabbix /etc/zabbix/externalscripts/echo.sh
 扩展检测的监控方式是通过zabbix-server来执行fork进程的，但过多的fork进程会带来额外的性能开销，启动过多的扩展检测监控指标会让zabbix-server的性能降低，因此尽量
-减少使用
+减少使用。
 
-
+监控指标的预处理，我们只需要修改配置文件就可以了
+ vim /etc/zabbix/zabbix_server.conf
+### Option: StartPreprocessors
+#       Number of pre-forked instances of preprocessing workers.
+#       The preprocessing manager process is automatically started when preprocessor worker is started.
+#
+# Mandatory: no
+# Range: 1-1000
+# Default:
+StartPreprocessors=3		#默认的是3个
+预处理的数据类型
+1)字符类型-正则表达式（Regular expression）
+pattern 表示匹配的正则表达式
+output 表示配置输出的正则表达式
+2)字符删除-全部匹配（Trim）
+将匹配到的字符串从开始到结束全部删除
+3)字符删除-从左到右（Left/Right trim）
+将匹配到的字符串从左边开始删除(右向左)
+4)数据类型-JSON（json path）
+JSON 数据类型的取值，和标准的json解析类似，用$开始，以.分隔符号，如：
+$.document.item.value表示将json字符串{"document":{item:{"value":10}}}中取出10.
+5)数据类型-xml
+这个功能需要在zabbix-server编译时候开启libxml 参数，rpm安装默认开启的参数
+number(/document/item/value)，将从xml字符串取出10
+<document>
+	<item>
+	<value>
+	  10
+	<value>
+	<item>
+<document>
