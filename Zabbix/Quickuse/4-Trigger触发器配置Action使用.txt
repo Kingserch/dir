@@ -151,3 +151,5 @@ Event date: 2014.01.02
 {HOST.PORT}
 {ACTION.ID}
 {ACTION.NAME}
+触发告警后，我们需要对告警进行处理，可以执行远程命令，需要配置agent支持远程命令。
+sed -i s/#EnableRemoteCommands=0/EnableRemoteCommands=1/g /etc/zabbix/zabbix_agent.conf
