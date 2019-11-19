@@ -10,3 +10,144 @@ Trigger表达式
 {Template Cisco envmon:sysUpTime.change(0)}<0	启动时间最近一次的值-上一次的值之差小于0
 {Template SNMP OS ESXi:vmwVMGuestState.[{#SNMPINDEX}]. regexp("not running")}=1	匹配字符串“not running”
 {Template SNMP OS ESXi:hrStorageUsedBlocks[{#SNMPINDEX}]. last(0)} /{Template SNMP OS ESXi:hrStorageSizeBlocks[{#SNMPINDEX}]. last(0)} > 0.9	两个值相除大于0.9
+Action(动作)
+有了这个action在报警的时候，可以告诉用户那块出问题了，用户也可以自定义脚本来预处理该问题，以下是告警消息中宏配置的使用
+示例1：在默认的标题{TRIGGER.NAME}中表示Trigger的名称。
+
+{TRIGGER.NAME}: {TRIGGER.STATUS}
+当接收到消息后，内容将被解析为：
+
+Processor load is too high on server zabbix.zabbix.com: PROBLEM
+示例2：除使用宏外，我们还可以使用函数表达式来获取具体的数值[不通顺]。例如：
+
+Processor load is: {zabbix.zabbix.com:system.cpu.load[,avg1].last()}
+当接收到消息后，内容将被解析为：
+
+Processor load is: 1.45
+示例3：有如下告警消息内容。
+
+Latest value: {{HOST.HOST}:{ITEM.KEY}.last()}
+MAX for 15 minutes: {{HOST.HOST}:{ITEM.KEY}.max(900)}
+MIN for 15 minutes: {{HOST.HOST}:{ITEM.KEY}.min(900)}
+当接收到消息后，内容将被解析为：
+
+Latest value: 1.45
+MAX for 15 minutes: 2.33
+MIN for 15 minutes: 1.01
+示例4：支持在消息内容中显示触发器的正则表达式。
+
+Trigger: {TRIGGER.NAME}
+Trigger expression: {TRIGGER.EXPRESSION}
+ 
+1. Item value on {HOST.NAME1}: {ITEM.VALUE1} ({ITEM.NAME1})
+2. Item value on {HOST.NAME2}: {ITEM.VALUE2} ({ITEM.NAME2})
+当接收到消息后，内容将被解析为：
+
+Trigger: Processor load is too high on a local host
+Trigger expression: {Myhost:system.cpu.load[percpu,avg1].last(0)}>5 | {Myotherhost:system.cpu.load[percpu,avg1].last(0)}>5
+
+1. Item value on Myhost: 0.83 (Processor load (1 min average per core))
+2. Item value on Myotherhost: 5.125 (Processor load (1 min average per core))
+示例5：告警故障消息。
+
+Problem:
+Event ID: {EVENT.ID}
+Event value: {EVENT.VALUE} 
+Event status: {EVENT.STATUS} 
+Event time: {EVENT.TIME}
+Event date: {EVENT.DATE}
+Event age: {EVENT.AGE}
+Event acknowledgement: {EVENT.ACK.STATUS} 
+Event acknowledgement history: {EVENT.ACK.HISTORY}
+当接收到消息后，内容将被解析为：
+
+Problem:
+Event ID: 21874
+Event value: 1 
+Event status: PROBLEM 
+Event time: 13:04:30
+Event date: 2014.01.02
+Event age: 5m
+Event acknowledgement: Yes 
+Event acknowledgement history: 2014.01.02 11:11:01 "Smith (Admin)"
+示例6：告警恢复消息。
+
+Recovery: 
+Event ID: {EVENT.RECOVERY.ID}
+Event value: {EVENT.RECOVERY.VALUE} 
+Event status: {EVENT.RECOVERY.STATUS} 
+Event time: {EVENT.RECOVERY.TIME}
+Event date: {EVENT.RECOVERY.DATE}
+当接收到消息后，内容将被解析为：
+
+Recovery: 
+Event ID: 21896
+Event value: 0 
+Event status: OK 
+Event time: 13:10:07
+Event date: 2014.01.02
+6.3.5　在告警消息中使用宏
+在告警消息中同样可以使用宏。下面我们针对Zabbix 4.0版本列出了一些宏，其中较常用的宏已用粗体字标出。
+
+{host:key.func(param)}
+{TRIGGER.EVENTS.ACK}
+{TRIGGER.EVENTS.PROBLEM.ACK}
+{TRIGGER.EVENTS.PROBLEM.UNACK}
+{TRIGGER.EVENTS.UNACK}
+{TRIGGER.HOSTGROUP.NAME}
+{TRIGGER.PROBLEM.EVENTS.PROBLEM.ACK}
+{TRIGGER.PROBLEM.EVENTS.PROBLEM.UNACK}
+{TRIGGER.EXPRESSION}
+{TRIGGER.EXPRESSION.RECOVERY}
+{TRIGGER.ID}
+{TRIGGER.NAME} 
+{TRIGGER.VALUE}
+{TRIGGER.NAME.ORIG}
+{TRIGGER.NSEVERITY}
+{TRIGGER.SEVERITY}
+{TRIGGER.STATE}
+{TRIGGER.STATUS}
+{TRIGGER.TEMPLATE.NAME}
+{TRIGGER.URL}
+
+{EVENT.ID}
+{EVENT.DATE} #事件的日期
+{EVENT.TIME} #事件的时间
+{EVENT.UPDATE.HISTORY}
+{EVENT.ACK.STATUS}
+{EVENT.AGE}
+{EVENT.VALUE}
+{EVENT.TAGS}  #tag
+{EVENT.UPDATE.ACTION}
+{EVENT.UPDATE.DATE}
+{EVENT.UPDATE.HISTORY}
+{EVENT.UPDATE.MESSAGE}
+{EVENT.UPDATE.TIME}
+{EVENT.RECOVERY.DATE}
+{EVENT.RECOVERY.TIME}
+{EVENT.RECOVERY.TAGS}
+{EVENT.RECOVERY.VALUE}
+{TIME}  #发送告警的时间
+{DATE}  #发送告警的日期
+{PROXY.NAME}
+{PROXY.DESCRIPTION}
+{ITEM.NAME.ORIG}
+{ITEM.LOG.TIME}
+{ITEM.LOG.SOURCE}
+{ITEM.LOG.SEVERITY}
+{ITEM.LOG.NSEVERITY}
+{ITEM.LOG.EVENTID}
+{ITEM.LOG.DATE}
+{ITEM.LOG.AGE}
+{ITEM.LASTVALUE}
+{ITEM.KEY.ORIG}
+{ITEM.NAME}   #Item的名称
+{ITEM.KEY}    #Item的key
+{ITEM.VALUE}  #Item的值
+{ITEM.ID}
+{ITEM.DESCRIPTION}
+{INVENTORY.*}
+{HOST.NAME}  #主机名
+{HOST.PORT}
+{ACTION.ID}
+{ACTION.NAME}
