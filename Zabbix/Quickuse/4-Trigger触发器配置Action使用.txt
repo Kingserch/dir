@@ -10,5 +10,3 @@ Trigger表达式
 {Template Cisco envmon:sysUpTime.change(0)}<0	启动时间最近一次的值-上一次的值之差小于0
 {Template SNMP OS ESXi:vmwVMGuestState.[{#SNMPINDEX}]. regexp("not running")}=1	匹配字符串“not running”
 {Template SNMP OS ESXi:hrStorageUsedBlocks[{#SNMPINDEX}]. last(0)} /{Template SNMP OS ESXi:hrStorageSizeBlocks[{#SNMPINDEX}]. last(0)} > 0.9	两个值相除大于0.9
-Action(动作)
-Action的事件来源有4种，包括Trigger(触发器)，Discovery(网络自动发现)，Auto regisreation(agent主动注册)和Internal(内部事件)。
