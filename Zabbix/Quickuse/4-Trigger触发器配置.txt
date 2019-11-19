@@ -1,0 +1,2 @@
+告警流程具体可表示为：
+Host groups(设备组)->hosts(设备)->Appliacation(监控项组)->Items(监控项)->Triggers(触发器)->Actions(告警动作)->Medias(告警方式)->User groups(用户组)->Users(用户)
