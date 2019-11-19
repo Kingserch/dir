@@ -1,2 +1,12 @@
 告警流程具体可表示为：
 Host groups(设备组)->hosts(设备)->Appliacation(监控项组)->Items(监控项)->Triggers(触发器)->Actions(告警动作)->Medias(告警方式)->User groups(用户组)->Users(用户)
+Trigger表达式
+{Template OS Linux:agent.hostname.diff(0)}>0	主机名发生了改变
+{Template OS Linux:kernel.maxproc.last(0)}<512	最后接收到的数据小于512个
+{Template OS Linux:proc.num[,,run].avg(5m)}>30	5分钟的平均数值大于30
+{Template OS Linux:socket.tcp_established.last(0)}>25000 and {Template OS Linux:socket.tcp_established.last(#1,5m)}>25000	值大于25000 个并且 5分钟第一次的值大于25000个
+{Template OS Linux:system.localtime.fuzzytime(5m)}=0	时间相差5分钟
+{Template OS Linux:agent.ping.nodata(10m)}=1 and {Template OS Linux:agent.ping.last(#20,10m)}=1 and {Template OS Linux:agent.ping.last(#16,10m)}=1 and {Template OS Linux:agent.ping.last(#12,10m)}=1	10分钟内没接收到数据，并发10分钟的第12、16、20次都没有数据
+{Template Cisco envmon:sysUpTime.change(0)}<0	启动时间最近一次的值-上一次的值之差小于0
+{Template SNMP OS ESXi:vmwVMGuestState.[{#SNMPINDEX}]. regexp("not running")}=1	匹配字符串“not running”
+{Template SNMP OS ESXi:hrStorageUsedBlocks[{#SNMPINDEX}]. last(0)} /{Template SNMP OS ESXi:hrStorageSizeBlocks[{#SNMPINDEX}]. last(0)} > 0.9	两个值相除大于0.9
