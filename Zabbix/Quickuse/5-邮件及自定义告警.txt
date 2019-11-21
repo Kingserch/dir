@@ -105,12 +105,36 @@ if __name__ == "__main__":
     logwrite(sendstatus,mail_to,content)
 注意上面这个脚本文件需要Zabbix用户具有执行权限，以确保脚本能正常运行。下面对脚本文件进行权限改变。
 
-shell# chmod  700  /etc/zabbix/alertscripts/zabbix_sendmail.py
-shell#  chown  zabbix.zabbix  /etc/zabbix/alertscripts/zabbix_sendmail.py
+chmod  700  /etc/zabbix/alertscripts/zabbix_sendmail.py
+chown  zabbix.zabbix  /etc/zabbix/alertscripts/zabbix_sendmail.py
 使用脚本测试发送邮件。
-
- shell# python /etc/zabbix/alertscripts/zabbix_sendmail.py     
+python /etc/zabbix/alertscripts/zabbix_sendmail.py     
 info@itnihao.com   test   "test to send mail"
-235页
 
+
+如何取消告警发送
+当大量告警无法正常发送时，告警会处于队列堆积状态，因此，我们可以手动关闭告警，使其不再发送。在数据库中，alerts表记录了即将发送的告警消息，其状态为1，表示待发送；状态为0，表示已发送，因此可以使用如下语句批量取消告警发送。
+shell# mysql -uzabbix -pzabbix zabbix "update alerts set status='1' where status='0'"
+如何删除故障信息
+当Zabbix-Web界面中的故障信息，无法通过手动操作关闭故障的时候，我们还可以通过直接操作数据库进行删除。为了方便，可用笔者编写的脚本进行操作，如下所示：
+#!/bin/bash
+
+MYSQL_BIN=mysql       #MySQL的程序
+MYSQL_USER=zabbix     #MySQL的用户名
+MYSQL_PWD=zabbix      #MySQL的密码
+MYSQL_PORT=3306       #MySQL的端口
+MYSQL_HOST=127.0.0.1  #MySQL的IP
+DB_NAME=zabbix        #数据库名称
+MYSQL_LOGIN="${MYSQL_BIN} -u${MYSQL_USER} -p${MYSQL_PWD} -h${MYSQL_HOST} -P${MYSQL_PORT} ${DB_NAME}"
+triggerids="13614 13684" #此处填写需要被删除的故障的triggerid
+for ID in ${triggerids};do
+	echo "------------------------------------------------------"
+	echo "update zabbix.triggers set value=0 where triggerid=${ID} and value=1"
+	${MYSQL_LOGIN} -e "update zabbix.triggers set value=0 where triggerid=${ID} and value=1" 2>&1 | grep -v "Warning: Using a password"
+	echo "delete from zabbix.events where objectid=${ID} and object=0"
+	${MYSQL_LOGIN} -e "delete from zabbix.events where objectid=${ID} and object=0" 2>&1 | grep -v "Warning: Using a password"
+#4.0版本还需要清理problem表的数据记录
+	${MYSQL_LOGIN} -e "delete from zabbix.problem where objectid=${ID} and object=0" 2>&1 | grep -v "Warning: Using a password"
+  echo ""
+done
 
