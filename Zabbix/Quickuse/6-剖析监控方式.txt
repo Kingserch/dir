@@ -1,0 +1,31 @@
+zabbix支持多种监控方式，获取数据的方式分三类：
+一是zabbix-server主动对外请求数据，
+二是外部主动发送数据给zabbix-server
+三是zabbix-server内部进行数据计算，对已有的数据进行重新计算分析。
+zabbix-agent的工作模式
+zabbix-agent 的工作模式分主动模式（active）和被动模式（passive）
+主动模式是指zabbix-agent将采集到的数据主动推送给zabbix-server，其行为是zabbix-agent向zabbix-server主动发起的数据连接过程
+，zabbix-server不用等待zabbix-agent的数据采集行为，zabbix-agent能够一次发送多条数据给zabbix-server，属于一对多的响应模式
+对zabbix-server的性能开销较少，适合大规模的环境使用。
+被动模式是指zabbix-server向zabbix-agent请求数据，zabbix-agent被动接受数据请求后进行回应，属于一对一的响应模式。
+主动模式和被动模式在同一个zabbix-agent是可以共存的，
+在zabbix-agent的配置文件中，server serveractive Hostname三个参数跟工作模式紧密关系
+egrep -v "(^#|^$)" /etc/zabbix/zabbix_agentd.conf 
+Server=127.0.0.1,192.168.31.131    	#被动模式连接的Zabbix-Server的IP地址
+ServerActive=127.0.0.1,192.168.31.131	#主动模式连接的Zabbix-Server的IP地址，开启此项参数，将会自动打开主动模式；将其注释，则会关闭主动模式。
+Hostname=Host-001 #在主动模式中，Hostname作为Zabbix-Server处理数据的唯一依据，要求Hostname在Zabbix-Server中具有唯一性。当有多个Zabbix-Agent的主机名都配置相同时，会造成该主机名下的主动模式监控项数据存储错乱，因为在不同的时间周期内，其存储的是不同Zabbix-Agent的数据。[已修复]
+StartAgents=3 #Agent的进程个数，用于被动模式，如果大于0，则会监听10050端口。如果只需要主动模式，则可以将其设置为0，
+被动模式配置
+vim  /etc/zabbix/zabbix_agentd.conf
+Server=127.0.0.1,192.168.31.131  #多个IP之间用逗号隔开
+systemctl restart zabbix-agent
+被动模式的工作流程
+1.zabbix-server打开一个tcp连接
+2.zabbix-server发送一个key 为agent.ping\n的请求
+3.zabbix-agent接受这个请求，然后响应数据<header><datalen>
+4.zabbix-server对接受到的数据进行处理
+5.关闭tcp连接
+主动模式的配置
+vim  /etc/zabbix/zabbix_agentd.conf
+ServerActive=127.0.0.1:10051,192.168.31.138 #多个IP用逗号隔开，这个也可以是Proxy的ip地址
+systemctl restart zabbix-agent
