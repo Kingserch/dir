@@ -1,0 +1,25 @@
+邮件告警配置
+登录zabbix-web页面，点击Administration->Media types->Create media type(在右上角)
+创建用户，点击Administration->Users->Create user(在右上角)
+创建action，点击configuration->actions->create action，创建action默认的参数为空
+自定义脚本告警
+自定义脚本在/etc/zabbix/zabbix_server.conf中，配置语句如下：
+AlertScriptsPath=/etc/zabbix/alertscripts
+电话告警，以Nexmo语音api为例，介绍如何配置语音电话
+#!/usr/bin/env bash
+
+#从Web页面传递6个参数
+apiKey=$1    
+apiSecret=$2
+to=$3
+text=$4
+repeat=$5
+from=$6
+
+curl 'https://api.nexmo.com/tts/json' \
+	-d "api_key=$apiKey" \        	#API的key
+	-d "api_secret=$apiSecret" \  	#API的密钥
+	-d "to=$to" \                 	#接收的号码
+	-d "repeat=$repeat" \         	#重复的次数，非必需参数
+	-d "from=$from" \             	#来源号码，非必需参数
+	--data-urlencode "text=$text" 	#电话正文内容
