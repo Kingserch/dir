@@ -23,3 +23,11 @@ curl 'https://api.nexmo.com/tts/json' \
 	-d "repeat=$repeat" \         	#重复的次数，非必需参数
 	-d "from=$from" \             	#来源号码，非必需参数
 	--data-urlencode "text=$text" 	#电话正文内容
+微信告警
+wget https://github.com/Kingserch/dir/blob/master/Zabbix/scripts/master.zip
+mkdir wechat
+cp wechat-alert-master/wechat_linux_amd64 wechat	#把下载的文件里面的linux版本移动到创建的目录中
+chmod 755 /etc/zabbix/alertscripts/wechat/
+chown zabbix:zabbix /etc/zabbix/alertscripts/wechat
+
+
