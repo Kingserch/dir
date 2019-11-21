@@ -29,5 +29,14 @@ mkdir wechat
 cp wechat-alert-master/wechat_linux_amd64 wechat	#把下载的文件里面的linux版本移动到创建的目录中
 chmod 755 /etc/zabbix/alertscripts/wechat/
 chown zabbix:zabbix /etc/zabbix/alertscripts/wechat
+/etc/zabbix/alertscripts/wechat --corpid=wxee***********81aa --corpsecret= Mm0mHwI8iVsjA*JUGySxOFMIlbosoVEkWIEiw --msg="您好</br>告警测试" --user=oneoaas --agentid=1000003
+接下来我们在zabbix-web界面中配置微信告警，配置的参数如下
+--corpid=wxee***********81aa 
+--corpsecret=Mm0mHwI8iVsjA*JUGySxOFMIlbosoVEkWIEiw
+--agentid=1000003
+--user={ALERT.SENDTO}
+--msg={ALERT.MESSAGE}
+自定义邮件告警脚本
+
 
 
