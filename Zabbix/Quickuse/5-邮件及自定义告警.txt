@@ -137,4 +137,3 @@ for ID in ${triggerids};do
 	${MYSQL_LOGIN} -e "delete from zabbix.problem where objectid=${ID} and object=0" 2>&1 | grep -v "Warning: Using a password"
   echo ""
 done
-
