@@ -22,6 +22,13 @@ vim-enhanced  vim编辑器工具包
 yum install psmisc bash-completion vim-enhanced  net-tools* yum-utils  -y 
 yum grouplist 	#查看所有包组名称（包括安装和未安装的，）
 yum groupinstall  "Cinnamon" -y 	#安装组包（"组包名字"如果发现系统安装过程中落下的组包）
+
+mysql命令行神奇，支持命令补全，mycli
+安装yum install python-pip python-devel		pip install mycli
+如果遇到以下错误
+Cannot uninstall 'configobj'. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.
+执行一下安装
+pip install --ignore-installed mycli
 到此安装完成
 
 临时关闭防火墙
