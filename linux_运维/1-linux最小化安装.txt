@@ -25,7 +25,9 @@ yum groupinstall  "Cinnamon" -y 	#安装组包（"组包名字"如果发现系统安装过程中落下
 
 mysql命令行神奇，支持命令补全，mycli
 https://blog.51cto.com/wujianwei/2393313 参考博文
-安装yum install python-pip python-devel		pip install mycli
+安装yum install python-pip python-devel		
+pip install mycli
+pip install mycli -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com	# 这时用国内的镜像源来加速
 如果遇到以下错误
 Cannot uninstall 'configobj'. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.
 执行一下安装
