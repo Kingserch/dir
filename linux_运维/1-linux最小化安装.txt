@@ -32,6 +32,33 @@ pip install mycli -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.c
 Cannot uninstall 'configobj'. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.
 执行一下安装
 pip install --ignore-installed mycli
+[root@c-138 home]# mycli --help		#表示mycli 安装成功
+Usage: mycli [OPTIONS] [DATABASE]
+
+  A MySQL terminal client with auto-completion and syntax highlighting.
+
+  Examples:
+    - mycli my_database
+    - mycli -u my_user -h my_host.com my_database
+    - mycli mysql://my_user@my_host.com:3306/my_database
+
+mysql> select user,host from mysql.user;
++---------------+-----------+
+| user          | host      |
++---------------+-----------+
+| root          | %         |
+| mysql.session | localhost |
+| mysql.sys     | localhost |
+| root          | localhost |
+| zabbix        | localhost |
++---------------+-----------+
+5 rows in set (0.00 sec)
+mysql> set global validate_password_policy=0;
+Query OK, 0 rows affected (0.00 sec)
+mysql> set global validate_password_length=1;
+Query OK, 0 rows affected (0.00 sec)
+mysql> grant all on *.* to root@'%' identified by 'root' with grant option;		#授权
+mycli -h127.0.0.1 -uroot -p'root' 
 到此安装完成
 
 临时关闭防火墙
