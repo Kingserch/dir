@@ -12,7 +12,7 @@ curl -s -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
 yum update -y
 
 #安装工作中需要的工具
-yum install tree nmap dos2unix lrzsz nc lsof wget tcpdump htop iftop iotop sysstat nethogs  vim   -y
+yum install tree nmap dos2unix lrzsz nc lsof wget tcpdump htop iftop iotop sysstat nethogs  vim  tig -y
 #安装工作中需要的工具包
 psmisc 含有killall pstree 命令
 net-tools 含有netstat ifconfig route arp 等命令
