@@ -12,7 +12,8 @@ curl -s -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
 yum update -y
 
 #安装工作中需要的工具
-yum install tree nmap dos2unix lrzsz nc lsof wget tcpdump htop iftop iotop sysstat nethogs  vim  tig -y
+yum install tree nmap dos2unix lrzsz nc lsof wget tcpdump htop iftop iotop sysstat nethogs  vim  tig  jq -y
+yum install axel -y  #多线程下载工具，下载文件时可以替代curl、wget。
 #安装工作中需要的工具包
 psmisc 含有killall pstree 命令
 net-tools 含有netstat ifconfig route arp 等命令
@@ -22,6 +23,20 @@ vim-enhanced  vim编辑器工具包
 yum install psmisc bash-completion vim-enhanced  net-tools* yum-utils  -y 
 yum grouplist 	#查看所有包组名称（包括安装和未安装的，）
 yum groupinstall  "Cinnamon" -y 	#安装组包（"组包名字"如果发现系统安装过程中落下的组包）
+
+yum 安装htop性能检测工具 ，代替top
+wget http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.3.4-1.el3.rf.x86_64.rpm
+rpm -Uvh rpmforge-release-0.3.4-1.el3.rf.x86_64.rpm  
+
+Centos安装shellcheck
+由于shellcheck是haskell语言开发的，因此，会想到使用haskell的包管理工具cabal来安装。
+yum install cabal-install -y
+这样，就可以使用cabal install 来安装东西了
+在cabal install shellcheck之前还有些功夫要做。
+注意，以下指令都会安装在~/.cabal/bin目录下
+cabal update
+cabal install cabal
+cabal install shellcheck
 
 mysql命令行神奇，支持命令补全，mycli
 https://blog.51cto.com/wujianwei/2393313 参考博文
