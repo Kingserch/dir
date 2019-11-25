@@ -1,0 +1,88 @@
+HTTP服务器很重要是在客户端向其发送请求时向客户端投递网页的一个软件。
+nginx 的系统架构
+nginx 包含一个单一的master进程和多个worker进程，所有的进程都是单进程，worker进程就是处理连接的地方，因为这个组件就是用于处理
+客户端请求的，nginx使用了才做系统事件机制来快速响应这些请求。
+nginx的master进程负责读取配置文件，处理套接字，派生的work进程，打开日志文件和编译嵌入式的Perl脚本，master进程是一个可以通过
+处理信号响应来管理请求的进行。
+nginx的worker进程运行在一个忙碌的事件循环处理中，用于处理进入的连接，每一个nginx模块被构筑在worker中，因此任何请求处理，过滤
+处理代理的连接和更多的操作都在worker进程中完成，由于这种worker模型，操作系统能够单独处理每一个进程且调度处理程序最佳的运行在每
+一个处理器内核上。
+http模块是nginx 的核心模块，通过http处理客服端的所有交互，
+server指令开始一个新的上下文（connext），下面是nginx.conf配置的文件的http核心模块。
+http {
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 2048;
+
+    include             /etc/nginx/mime.types;
+    default_type        application/octet-stream;
+
+    # Load modular configuration files from the /etc/nginx/conf.d directory.
+    # See http://nginx.org/en/docs/ngx_core_module.html#include
+    # for more information.
+    include /etc/nginx/conf.d/*.conf;
+#   upstream app {
+#       server 192.168.31.130 weight 10;
+#       server 192.168.31.131;
+#       }
+    server {
+        listen       80 default_server;
+        listen       [::]:80 default_server;
+        server_name  _;
+        # server_tokens on;	#在错误的信息中，该指令禁止发送nginx版本号和server响应的头（默认为on）
+        root         /usr/share/nginx/html;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        location / {
+        }
+
+        error_page 404 /404.html;
+            location = /40x.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+            location = /50x.html {
+        }
+    }
+
+# Settings for a TLS enabled server.
+#
+#    server {
+#        listen       443 ssl http2 default_server;
+#        listen       [::]:443 ssl http2 default_server;
+#        server_name  _;
+#        root         /usr/share/nginx/html;
+#
+#        ssl_certificate "/etc/pki/nginx/server.crt";
+#        ssl_certificate_key "/etc/pki/nginx/private/server.key";
+#        ssl_session_cache shared:SSL:1m;
+#        ssl_session_timeout  10m;
+#        ssl_ciphers HIGH:!aNULL:!MD5;
+#        ssl_prefer_server_ciphers on;
+#
+#        # Load configuration files for the default server block.
+#        include /etc/nginx/default.d/*.conf;
+#
+#        location / {
+#        }
+#
+#        error_page 404 /404.html;
+#            location = /40x.html {
+#        }
+#
+#        error_page 500 502 503 504 /50x.html;
+#            location = /50x.html {
+#        }
+#    }
+
+}
