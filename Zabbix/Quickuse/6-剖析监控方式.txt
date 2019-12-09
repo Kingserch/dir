@@ -122,5 +122,5 @@ snmptt软件包默认已经做了日志切割，可不用手动配置，参考如下：
 [root@c-139 logrotate.d]# vim /etc/zabbix/zabbix_server.conf 
 StartSNMPTrapper=100
 SNMPTrapperFile=/var/log/snmptt/snmptt.log  #必须和snmptt.ini的日志路径一致/etc/snmp/snmptt.ini 
-shell# systemctl restart zabbix-server
+systemctl restart zabbix-server		#重启zabbix服务
 
