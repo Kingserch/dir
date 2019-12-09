@@ -29,3 +29,23 @@ systemctl restart zabbix-agent
 vim  /etc/zabbix/zabbix_agentd.conf
 ServerActive=127.0.0.1:10051,192.168.31.138 #多个IP用逗号隔开，这个也可以是Proxy的ip地址
 systemctl restart zabbix-agent
+
+SNMP监控
+配置zabbi-server的SNMP监控
+使用SNMP可以监控路由器，交换机，打印机，UPS等，要只会SNMP监控方式，需要在zabbix-server在编译源码的时候带上--with-net-snmp参数
+./configure --with-net-snmp 
+配置被监控端的SNMP
+[root@c-139 zabbix]# yum install -y net-snmp
+[root@c-139 zabbix]# vim /etc/snmpd/snmpd.conf 
+com2sec mynetwork 192.168.0.240 public_monitor
+com2sec mynetwork 127.0.0.1 public
+group MyROGroup v2c mynetwork
+access MyROGroup "" any noauth prefix all none none
+view all included .1 80
+[root@c-139 snmp]# systemctl start snmpd
+[root@c-139 snmp]# systemctl enable snmpd
+Created symlink from /etc/systemd/system/multi-user.target.wants/snmpd.service to /usr/lib/systemd/system/snmpd.service.
+[root@c-139 snmp]# yum install net-snmp-utils
+[root@c-139 snmp]# snmpwalk -v 2c -c public 127.0.0.1 SNMPv2-MIB::sysUpTime.0
+DISMAN-EVENT-MIB::sysUpTimeInstance = Timeticks: (11624) 0:01:56.24
+[root@c-139 snmp]# 
