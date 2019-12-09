@@ -49,3 +49,32 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/snmpd.service t
 [root@c-139 snmp]# snmpwalk -v 2c -c public 127.0.0.1 SNMPv2-MIB::sysUpTime.0
 DISMAN-EVENT-MIB::sysUpTimeInstance = Timeticks: (11624) 0:01:56.24
 [root@c-139 snmp]# 
+
+snmpTraps监控方式
+SNMPTraps是snmp的被管理端向snmp管理端主动发送数据的过程，管理端使用UDP162端口接受被管理端发送的数据，这个功能通常用于故障推送，信息发送等场景中
+SNMPTraps的安装与配置
+1. 安装snmptrapd软件包
+yum -y install net-snmp-perl perl-Digest-SHA1 perl-Sys-Syslog perl-List-MoreUtils perl-IO-stringy net-snmp-utils perl perl-Module-Build perl-Time-HiRes
+2. 安装snmptt软件包
+rpm -ivh https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/ e/epel-release-7-11.noarch.rpm
+yum -y install snmptt
+[root@c-139 snmp]# ls /usr/share/snmptt/snmptthandler-embedded	#检查snmptthandler是否存在
+/usr/share/snmptt/snmptthandler-embedded
+3.修改snmptrapd.conf配置文件
+[root@c-139 snmp]# vim /etc/snmp/snmptrapd.conf
+authCommunity   log,execute,net public
+perl do "/usr/share/snmptt/snmptthandler-embedded"	#添加俩个字段
+4. 修改snmptt.ini配置文件
+sed -i 's/mode = standalone/mode=daemon/g' 	/etc/snmp/snmptt.ini
+sed -i 's/net_snmp_perl_enable = 0/net_snmp_perl_enable = 1/g' 	/etc/snmp/snmptt.ini
+sed -i 's/translate_log_trap_oid = 0/translate_log_trap_oid = 2/g'	 /etc/snmp/snmptt.ini
+sed -i 's/#mibs_environment = ALL/mibs_environment = ALL/g' 	/etc/snmp/snmptt.ini
+sed -i 's/syslog_enable = 1/syslog_enable = 0/g' 	/etc/snmp/snmptt.ini
+sed -i 's/DEBUGGING = 0/DEBUGGING = 1/g' 	/etc/snmp/snmptt.ini
+
+vim /etc/snmp/snmptt.ini
+date_time_format = %H:%M:%S %Y/%m/%d
+[Debugging]
+DEBUGGING = 1
+DEBUGGING_FILE = /var/log/snmptt/snmptt.debug
+DEBUGGING_FILE_HANDLER = /var/log/snmptt/snmptthandler.debug
