@@ -1,0 +1,28 @@
+创建用户yking允许192.168.31网段的登录
+create user  yking@'192.168.31.%' identified by 'root';
+grant all on *.* to yking@'192.168.31.%' identified by 'root';	#仅限于mysql8.0以前的版本
+set global validate_password_policy=0;
+set global validate_password_length=1;
+查询用户
+select user,host from mysql.user;
+修改用户密码
+alter user yking@'192.168.31.%' identified by 'king';
+删除用户
+drop user root@'%';
+权限管理
+grant all on *.* to yking@'192.168.31.%' identified by 'root';
+all   
+with grant option
+公司需求
+1，创建一个管理员用户root，可以通过192.168.31网段，管理数据库
+grant all on *.* to root@'192.168.31.%' identified by 'root' with grant option;
+2，创建一个应用用户king，可以通过192.168.31网段，管理数据库
+grant select,insert,update,delete  on king.* to king@'192.168.31.%' identified by 'root';
+3,回收权限
+show grants for king@'192.168.31.%';
+revoke delete on king.* from 'king'@'192.168.31.%'；
+记一次公司开用户事件，
+1，是否收到领导邮件同意
+2，对那些库和表做操作
+3，做什么操作
+4，从什么地址来登录		
