@@ -9,14 +9,60 @@ Beats是elastic公司开源的一款采集系统监控数据的代理agent。
 
 https://www.elastic.co/cn/downloads/elasticsearch 官网地址
 
+链接：https://pan.baidu.com/s/12DPJ9wAQK8iWSaF8qjYyug 
+提取码：lmv9 
+复制这段内容后打开百度网盘手机App，操作更方便哦
+
 elsearch安装
+//把elsaerch上传到这个目录，然后解压
+[root@c-40 home]# tar -xvf elasticsearch-7.5.0-linux-x86_64.tar.gz -C elk/
 //创建elsearch用户，
 [root@c-40 home]# useradd elsearch
 //因为elsearch不支持root用户，所以需要授权创建的目录，让elsearch用户来管理
-[root@c-40 home]# chown -R elsearch:elsearch elk/
-//把elsaerch上传到这个目录，然后解压
-tar -xvf        -C elk 
+[root@c-40 home]# chown elsearch:elsearch elk/ -R
+[root@c-40 home]# cd elk/
+[root@c-40 elk]# ls
+elasticsearch
+[elsearch@c-40 elk]# cd elasticsearch/
+[elsearch@c-40 elasticsearch]# ls
+bin  config  jdk  lib  LICENSE.txt  logs  modules  NOTICE.txt  plugins  README.textile
+[elsearch@c-40 elasticsearch]# cd config
+//修改elasticsearch.yml 文件把network.host 改为4个0，支持任意ip访问
+[elsearch@c-40 config]# sed -i 's/#network.host: 192.168.0.1/network.host: 0.0.0.0/g' elasticsearch.yml  
+[elsearch@c-40 config]# egrep -v "^#|^$" elasticsearch.yml 
+network.host: 0.0.0.0	
+//修改默认的内存配置
+[elsearch@c-40 config]# sed -i 's/-Xmx1g/-Xmx128m/g' jvm.options 
+[elsearch@c-40 config]# sed -i 's/-Xms1g/-Xms128m/g' jvm.options 
+[elsearch@c-40 config]# egrep -v "^#|^$" jvm.options 
+-Xms128m
+-Xmx128m
+-XX:+UseConcMarkSweepGC
+-XX:CMSInitiatingOccupancyFraction=75
+-XX:+UseCMSInitiatingOccupancyOnly
+-Djava.io.tmpdir=${ES_TMPDIR}
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=data
+-XX:ErrorFile=logs/hs_err_pid%p.log
+8:-XX:+PrintGCDetails
+8:-XX:+PrintGCDateStamps
+8:-XX:+PrintTenuringDistribution
+8:-XX:+PrintGCApplicationStoppedTime
+8:-Xloggc:logs/gc.log
+8:-XX:+UseGCLogFileRotation
+8:-XX:NumberOfGCLogFiles=32
+8:-XX:GCLogFileSize=64m
+9-:-Xlog:gc*,gc+age=trace,safepoint:file=logs/gc.log:utctime,pid,tags:filecount=32,filesize=64m
+[elsearch@c-40 config]# 
+//切换到root用户
+[root@c-40 elasticsearch]# vim /etc/sysctl.conf 		#添加vm.max_map_count = 655360
+[root@c-40 elasticsearch]# sysctl -p			#使配置生效
+vm.max_map_count = 655360
 
-	
+
+
+
+
+
 cut -d : -f 1 /etc/passwd
 cut -d : -f 1 /etc/group
