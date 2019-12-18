@@ -1,0 +1,22 @@
+ElasticStack (elk)日志分析工具
+elk是先通过Beats来采集日志
+日志文件(Filebeat),网络流量(Packeybeat),服务指标(Metrcbeat)，win事件日志(winlogbeat)，Heartbeat(健康检查)。
+Elasticsearch基于java，是个开源分布式搜索引yin，特点是分布式，零配置，自动发现，索引自动分片，索引副本机制
+restful风格接口，多元数据源，自动搜索负载等
+Logstash基于java，是一个开源的用于收集，分析和存储日志的工具
+Kibana 基于nodejs，可以将logstah和Elasticsearch提供的日志分析友好的web界面，可以汇总分析搜索重要数据日志。
+Beats是elastic公司开源的一款采集系统监控数据的代理agent。
+
+https://www.elastic.co/cn/downloads/elasticsearch 官网地址
+
+elsearch安装
+//创建elsearch用户，
+[root@c-40 home]# useradd elsearch
+//因为elsearch不支持root用户，所以需要授权创建的目录，让elsearch用户来管理
+[root@c-40 home]# chown -R elsearch:elsearch elk/
+//把elsaerch上传到这个目录，然后解压
+tar -xvf        -C elk 
+
+	
+cut -d : -f 1 /etc/passwd
+cut -d : -f 1 /etc/group
